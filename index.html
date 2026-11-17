@@ -1511,21 +1511,21 @@ function openModalFut(c) {
 
 
 // ── modal SC (Sem Compras) — mesma estrutura do Queda ──────────
-function openSCModal(grp, idx) {
+function openSCModal(grp, cod) {
   let c, groupLabel, badgeCls, volRef, volRef2, volRef3, refLabel, ref2Label, ref3Label;
 
   if (grp === 'nov25') {
-    c = SC_NOV25[idx]; groupLabel = 'Sem Compra — Compraram Nov/25'; badgeCls = 's-danger';
+    c = SC_NOV25.find(x=>x.cod===cod); groupLabel = 'Sem Compra — Compraram Nov/25'; badgeCls = 's-danger';
     volRef = c.vol_nov25||0; refLabel = 'Vol Nov/25';
     volRef2 = c.vol_out26||0; ref2Label = 'Vol Out/26';
     volRef3 = c.dias; ref3Label = 'Dias Sem Compra';
   } else if (grp === 'saz') {
-    c = SC_SAZONAL[idx]; groupLabel = 'Sem Compra — Padrão Sazonal'; badgeCls = 's-warn';
+    c = SC_SAZONAL.find(x=>x.cod===cod); groupLabel = 'Sem Compra — Padrão Sazonal'; badgeCls = 's-warn';
     volRef = c.vol_out26||0; refLabel = 'Vol Out/26';
     volRef2 = c.vol_set26||0; ref2Label = 'Vol Set/26';
     volRef3 = c.dias; ref3Label = 'Dias Sem Compra';
   } else {
-    c = SC_180D[idx]; groupLabel = 'Sem Compra — Inativo 180d+'; badgeCls = 's-danger';
+    c = SC_180D.find(x=>x.cod===cod); groupLabel = 'Sem Compra — Inativo 180d+'; badgeCls = 's-danger';
     volRef = c.vol_nov25||0; refLabel = 'Vol Nov/25';
     volRef2 = c.vol12m_antes||0; ref2Label = 'Vol 12m (antes)';
     volRef3 = c.dias; ref3Label = 'Dias Sem Compra';
@@ -2208,7 +2208,7 @@ function renderZerados() {
       : `<td><div class="cell ap-num">${c.vol_nov25?fmt(c.vol_nov25):'<span style="color:var(--fg3)">—</span>'}</div></td>
          <td><div class="cell ap-num">${c.vol_2026?fmt(c.vol_2026):'<span style="color:var(--fg3)">—</span>'}</div></td>
          <td><div class="cell">${fmt(c.vol_12m)}</div></td>`;
-    return `<tr class="${diaCls}" style="cursor:pointer;" onclick="openSCModal('${grpAtual}',${ci})">
+    return `<tr class="${diaCls}" style="cursor:pointer;" onclick="openSCModal('${grpAtual}',${c.cod})">
       <td><div class="cell-cname"><div class="cname">${c.nome}</div><div style="font-size:10px;color:var(--fg3);font-family:'DM Mono',monospace;margin-top:2px;letter-spacing:.3px;">${c.cod}</div></div></td>
       <td><div class="cell-date">${qFmtDateSC(c.ultimo)}</div></td>
       <td><div class="cell">${diasBadge(c.dias)}</div></td>
@@ -2575,7 +2575,7 @@ renderZerados = function() {
     const statusHtml = c.ativo_out
       ? '<span class="badge b-warn" style="font-size:11px;">Ativo Out/26</span>'
       : '<span class="badge b-danger" style="font-size:11px;">Inativo</span>';
-    return `<tr class="${st}" style="cursor:pointer;" onclick="openSCModal('nov25',${ci})">
+    return `<tr class="${st}" style="cursor:pointer;" onclick="openSCModal('nov25',${c.cod})">
       <td><div class="cell-cname"><div class="cname">${c.nome}</div><div style="font-size:10px;color:var(--fg3);font-family:'DM Mono',monospace;margin-top:2px;letter-spacing:.3px;">${c.cod}</div></div></td>
       <td><div class="cell-date">${qFmtDateSC(c.ultimo_nov25)}</div></td>
       <td><div class="cell-date">${qFmtDateSC(c.ultima_compra)}</div></td>
