@@ -780,7 +780,6 @@ async function doLogin() {
     } else {
       errEl.textContent = `Usuário ou senha incorretos. (${MAX_ATTEMPTS-attempts} tentativa${MAX_ATTEMPTS-attempts!==1?'s':''} restante${MAX_ATTEMPTS-attempts!==1?'s':''})`;
     }
-  }
 }
 function togglePw() {
   const p = document.getElementById('p'), icon = document.getElementById('eye-icon');
@@ -789,11 +788,7 @@ function togglePw() {
 }
 document.getElementById('p').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 document.getElementById('u').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('p').focus(); });
-try {
-  const exp = parseInt(sessionStorage.getItem('auth_exp')||'0');
-  if (sessionStorage.getItem('auth')==='1' && Date.now()<exp) showDashboard();
-  else { sessionStorage.removeItem('auth'); sessionStorage.removeItem('auth_exp'); }
-} catch(e){}
+// sessão gerenciada pelo Supabase Auth
 
 function showToast() { const t=document.getElementById('toast'); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000); }
 
