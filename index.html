@@ -738,9 +738,41 @@ const _sb = supabase.createClient(_SB_URL, _SB_KEY);
 const MAX_ATTEMPTS = 5, LOCK_SECONDS = 60;
 let attempts = 0, lockedUntil = 0;
 
-function showDashboard() {
+async function showDashboard() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
+  await loadVolumesFromSupabase();
+}
+
+async function loadVolumesFromSupabase() {
+  try {
+    const { data, error } = await _sb
+      .from('volumes_diarios')
+      .select('*')
+      .order('id', { ascending: true });
+    if (error || !data || data.length === 0) return;
+
+    // Atualiza DATA com valores do Supabase
+    data.forEach(row => {
+      const d = DATA.find(x => x.produto === row.produto);
+      if (d) {
+        d.meta   = row.meta;
+        d.acum   = row.acumulado;
+        d.bonif  = row.bonif;
+        d.apPer  = row.ap_periodo;
+        d.apTot  = row.ap_total;
+      }
+    });
+
+    // Atualiza FATOR e HOJE
+    const ref = data[0];
+    if (ref.fator)  window._FATOR_SB = ref.fator;
+    if (ref.hoje)   window._HOJE_SB  = ref.hoje;
+
+    // Re-renderiza as abas que dependem de DATA
+    renderTendencia && renderTendencia();
+    renderMetas    && renderMetas();
+  } catch(e) { console.warn('Supabase load error:', e); }
 }
 
 // Verifica sessão ativa ao carregar
@@ -801,48 +833,55 @@ function switchTab(id, btn) {
 }
 
 // ── TENDÊNCIA DATA ────────────────────────────────────────────
-const FATOR = 25 / 13;
+let FATOR = 25 / 13;
+let HOJE = 17;
 const DATA = [
   { produto:'GELO 05KG', meta:28000, acum:13506, bonif:139, apPer:10613, apTot:21705 },
   { produto:'GELO 10KG', meta:29000, acum:11762, bonif:206, apPer:11094, apTot:22899 },
   { produto:'GELO 20KG', meta:15000, acum:4435,  bonif:134, apPer:4302,  apTot:8585  },
   { produto:'GELO 40KG', meta:20000, acum:9690,  bonif:283, apPer:7499,  apTot:15965 },
 ];
+const getFATOR = () => window._FATOR_SB || FATOR;
+const getHOJE  = () => window._HOJE_SB  || HOJE;
 const fmt = n => Math.round(n).toLocaleString('pt-BR');
 const pctSt = p => p>=100?'ok':p>=85?'warn':'danger';
 const kpiCls = p => p>=100?'':p>=85?'c-warn':'c-danger';
 
-const totAcum=DATA.reduce((s,d)=>s+d.acum+(d.bonif||0),0), totMeta=DATA.reduce((s,d)=>s+d.meta,0);
-const totTend=Math.round(totAcum*FATOR), totApTot=DATA.reduce((s,d)=>s+d.apTot,0);
-const pctMeta=Math.round(totTend/totMeta*100);
+const totAcum=()=>DATA.reduce((s,d)=>s+d.acum+(d.bonif||0),0);
+const totMeta=()=>DATA.reduce((s,d)=>s+d.meta,0);
+const totTend=()=>Math.round(totAcum()*getFATOR());
+const totApTot=()=>DATA.reduce((s,d)=>s+d.apTot,0);
+const pctMeta=()=>Math.round(totTend()/totMeta()*100);
 
-document.getElementById('kpi-strip').innerHTML = [
-  {lbl:'Volume Acumulado',    val:fmt(totAcum),  cls:'',          hi:true },
-  {lbl:'Tendência Mês Atual', val:fmt(totTend),  cls:'',          hi:true },
-  {lbl:'Meta de Produção',    val:fmt(totMeta),  cls:'',          hi:false},
-  {lbl:'% Tendência / Meta',  val:pctMeta+'%',   cls:kpiCls(pctMeta), hi:true },
-  {lbl:'Ano Passado — Nov/25',val:fmt(totApTot), cls:'c-gold',    hi:false},
-].map(k=>`<div class="kpi-cell${k.hi?' highlight':''}"><div class="kpi-lbl">${k.lbl}</div><div class="kpi-num ${k.cls}">${k.val}</div></div>`).join('');
+function renderTendencia() {
+  document.getElementById('kpi-strip').innerHTML = [
+    {lbl:'Volume Acumulado',    val:fmt(totAcum()),  cls:'',              hi:true },
+    {lbl:'Tendência Mês Atual', val:fmt(totTend()),  cls:'',              hi:true },
+    {lbl:'Meta de Produção',    val:fmt(totMeta()),  cls:'',              hi:false},
+    {lbl:'% Tendência / Meta',  val:pctMeta()+'%',   cls:kpiCls(pctMeta()), hi:true },
+    {lbl:'Ano Passado — Nov/25',val:fmt(totApTot()), cls:'c-gold',        hi:false},
+  ].map(k=>`<div class="kpi-cell${k.hi?' highlight':''}"><div class="kpi-lbl">${k.lbl}</div><div class="kpi-num ${k.cls}">${k.val}</div></div>`).join('');
 
-document.getElementById('tbody').innerHTML = DATA.map(d => {
-  const tend=Math.round((d.acum+(d.bonif||0))*FATOR), pct=Math.round(tend/d.meta*100), st=pctSt(pct);
-  const barC=st==='ok'?'#00A850':st==='warn'?'#F0A500':'#B52B1A';
-  return `<tr class="s-${st}">
-    <td><div class="cell-name"><div class="prod-name">${d.produto}</div></div></td>
-    <td><div class="cell">${fmt(d.meta)}</div></td>
-    <td><div class="cell cell-acum">${fmt(d.acum+(d.bonif||0))}<span style="font-size:10px;color:var(--fg3);display:block;">fat:${fmt(d.acum)} bonif:${fmt(d.bonif||0)}</span></div></td>
-    <td><div class="cell"><div class="tend-wrap"><span class="tend-num">${fmt(tend)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(pct,100)}%;background:${barC};"></div></div></div></div></td>
-    <td><div class="cell"><span class="badge b-${st}">${pct}%</span></div></td>
-    <td><div class="cell ap-num">${fmt(d.apPer)}</div></td>
-    <td><div class="cell ap-num">${fmt(d.apTot)}</div></td>
-  </tr>`;
-}).join('');
+  document.getElementById('tbody').innerHTML = DATA.map(d => {
+    const tend=Math.round((d.acum+(d.bonif||0))*getFATOR()), pct=Math.round(tend/d.meta*100), st=pctSt(pct);
+    const barC=st==='ok'?'#00A850':st==='warn'?'#F0A500':'#B52B1A';
+    return `<tr class="s-${st}">
+      <td><div class="cell-name"><div class="prod-name">${d.produto}</div></div></td>
+      <td><div class="cell">${fmt(d.meta)}</div></td>
+      <td><div class="cell cell-acum">${fmt(d.acum+(d.bonif||0))}<span style="font-size:10px;color:var(--fg3);display:block;">fat:${fmt(d.acum)} bonif:${fmt(d.bonif||0)}</span></div></td>
+      <td><div class="cell"><div class="tend-wrap"><span class="tend-num">${fmt(tend)}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.min(pct,100)}%;background:${barC};"></div></div></div></div></td>
+      <td><div class="cell"><span class="badge b-${st}">${pct}%</span></div></td>
+      <td><div class="cell ap-num">${fmt(d.apPer)}</div></td>
+      <td><div class="cell ap-num">${fmt(d.apTot)}</div></td>
+    </tr>`;
+  }).join('');
+}
+renderTendencia();
 
 // ── CALENDÁRIO DATA ───────────────────────────────────────────
 const META_MES = { total:92000,'05KG':28000,'10KG':29000,'20KG':15000,'40KG':20000 };
 const DIAS_UTEIS = 25;
 const PRODUTOS = ['05KG','10KG','20KG','40KG'];
-const HOJE = 17;
 
 // ── BONIF POR CLIENTE Nov/26 ──────────────────────────────────────
 const BONIF_NOV26 = {
