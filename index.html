@@ -499,10 +499,10 @@ footer span { font-size:11px; color:var(--fg3); }
       <div class="h-sub">Novembro 2026 &nbsp;·&nbsp; Acumulado até 16/11</div>
     </div>
   </div>
-  <div class="h-fator">
+  <div class="h-fator" id="h-fator-box">
     <div class="lbl">Fator Calendário</div>
-    <div class="val">1,92×</div>
-    <div class="sub">13 de 25 dias úteis</div>
+    <div class="val" id="h-fator-val">1,92×</div>
+    <div class="sub" id="h-fator-sub">13 de 25 dias úteis</div>
   </div>
 </header>
 
@@ -853,6 +853,17 @@ const totApTot=()=>DATA.reduce((s,d)=>s+d.apTot,0);
 const pctMeta=()=>Math.round(totTend()/totMeta()*100);
 
 function renderTendencia() {
+  // Atualiza FATOR e dias no header
+  const fatorAtual = getFATOR();
+  const hojeAtual = getHOJE();
+  const diasAcum = Math.round(25 / fatorAtual);
+  const diaAntes = hojeAtual - 1;
+  const mesNomes = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const mesAtual = new Date().getMonth() + 1;
+  document.getElementById('h-fator-val') && (document.getElementById('h-fator-val').textContent = fatorAtual.toFixed(2).replace('.',',') + '×');
+  document.getElementById('h-fator-sub') && (document.getElementById('h-fator-sub').textContent = diasAcum + ' de 25 dias úteis');
+  document.querySelector('.h-sub') && (document.querySelector('.h-sub').textContent = mesNomes[mesAtual] + '/26 · Acumulado até ' + diaAntes + '/' + String(mesAtual).padStart(2,'0'));
+
   document.getElementById('kpi-strip').innerHTML = [
     {lbl:'Volume Acumulado',    val:fmt(totAcum()),  cls:'',              hi:true },
     {lbl:'Tendência Mês Atual', val:fmt(totTend()),  cls:'',              hi:true },
