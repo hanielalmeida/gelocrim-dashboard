@@ -772,6 +772,7 @@ async function loadVolumesFromSupabase() {
     // Re-renderiza as abas que dependem de DATA
     renderTendencia && renderTendencia();
     renderMetas && renderMetas();
+    renderCalendario && renderCalendario();
   } catch(e) { console.warn('Supabase load error:', e); }
 }
 
@@ -1417,11 +1418,15 @@ function acumReal(prod) { return CAL.filter(c=>c.d<getHOJE()&&c.real).reduce((s,
 function diasRest() { return CAL.filter(c=>c.d>=getHOJE()&&c.peso===1).length; }
 function metaRecalc(prod) { const r=META_MES[prod]-acumReal(prod), dr=diasRest(); return dr>0?r/dr:0; }
 
-function renderMetas() {
-  const RECALC={};
+const RECALC={};
+function atualizaRECALC() {
   PRODUTOS.forEach(p=>{ RECALC[p]=metaRecalc(p); });
   RECALC.total=PRODUTOS.reduce((s,p)=>s+RECALC[p],0);
+}
+atualizaRECALC();
 
+function renderMetas() {
+  atualizaRECALC();
   const rat=CAL.filter(c=>c.d<getHOJE()&&c.real).reduce((s,c)=>s+c.real.total,0);
   const dcr=CAL.filter(c=>c.d<getHOJE()&&c.real&&c.peso===1).length;
   const ultimoDia=getHOJE()-1;
@@ -1437,50 +1442,55 @@ function renderMetas() {
 renderMetas();
 
 // Render calendário — Nov 1, 2026 = domingo, offset 0
-const calCont = document.getElementById('cal-days');
-CAL.forEach(c => {
-  const div = document.createElement('div');
-  const isHoje=c.d===HOJE, isFut=!c.real&&!isHoje&&c.peso===1, isDom=c.peso===0;
-  let st='s-future';
-  if (isDom) st='dom';
-  else if (isHoje) st='s-today';
-  else if (c.real) {
-    const pct=c.real.total/metaOrig('total')*100;
-    st='s-'+(pct>=100?'ok':pct>=85?'warn':'danger');
-  }
-  div.className='cal-day '+st;
-
-  if (isDom) {
-    div.innerHTML=`<div class="day-num">${c.d}</div><div style="font-size:10px;color:var(--fg3);font-weight:500;">${c.ds}</div>`;
-  } else {
-    const metaDia=metaOrig('total');
-    const exibeMeta=isFut?RECALC.total:metaDia;
-    let realHtml='', barW=0;
-    if (c.real) {
-      const pct=Math.round(c.real.total/metaDia*100);
-      barW=Math.min(pct,100);
-      realHtml=`<div class="day-real-txt">${fmt(c.real.total)}</div>`;
-    } else if (isHoje && c.real) {
-      const pct=Math.round(c.real.total/metaDia*100);
-      barW=Math.min(pct,100);
-      realHtml=`<div class="day-real-txt">${fmt(c.real.total)}<span style="font-size:9px;font-weight:400;margin-left:3px;">parcial</span></div>`;
-    } else if (isHoje) {
-      realHtml=`<div class="day-real-txt" style="color:var(--green-mid);font-size:11px;">em andamento</div>`;
+function renderCalendario() {
+  const calCont = document.getElementById('cal-days');
+  if (!calCont) return;
+  calCont.innerHTML = '';
+  atualizaRECALC();
+  CAL.forEach(c => {
+    const div = document.createElement('div');
+    const isHoje=c.d===getHOJE(), isFut=!c.real&&!isHoje&&c.peso===1, isDom=c.peso===0;
+    let st='s-future';
+    if (isDom) st='dom';
+    else if (isHoje) st='s-today';
+    else if (c.real) {
+      const pct=c.real.total/metaOrig('total')*100;
+      st='s-'+(pct>=100?'ok':pct>=85?'warn':'danger');
     }
-    const recalcHtml=isFut?`<div class="day-recalc-txt">↗ ${fmt(RECALC.total)}</div>`:'';
-    div.innerHTML=`
-      <div class="day-num">${c.d}${isHoje?' ◀':''}</div>
-      <div class="day-meta-txt">meta ${fmt(metaDia)}</div>
-      ${realHtml}${recalcHtml}
-      <div class="day-bar-b"><div class="day-bar-f" style="width:${barW}%"></div></div>`;
-    if (!isDom) div.addEventListener('click', () => isFut?openModalFut(c):openModal(c));
-  }
-  calCont.appendChild(div);
-});
+    div.className='cal-day '+st;
+
+    if (isDom) {
+      div.innerHTML=`<div class="day-num">${c.d}</div><div style="font-size:10px;color:var(--fg3);font-weight:500;">${c.ds}</div>`;
+    } else {
+      const metaDia=metaOrig('total');
+      let realHtml='', barW=0;
+      if (c.real) {
+        const pct=Math.round(c.real.total/metaDia*100);
+        barW=Math.min(pct,100);
+        realHtml=`<div class="day-real-txt">${fmt(c.real.total)}</div>`;
+      } else if (isHoje && c.real) {
+        const pct=Math.round(c.real.total/metaDia*100);
+        barW=Math.min(pct,100);
+        realHtml=`<div class="day-real-txt">${fmt(c.real.total)}<span style="font-size:9px;font-weight:400;margin-left:3px;">parcial</span></div>`;
+      } else if (isHoje) {
+        realHtml=`<div class="day-real-txt" style="color:var(--green-mid);font-size:11px;">em andamento</div>`;
+      }
+      const recalcHtml=isFut?`<div class="day-recalc-txt">↗ ${fmt(RECALC.total)}</div>`:'';
+      div.innerHTML=`
+        <div class="day-num">${c.d}${isHoje?' ◀':''}</div>
+        <div class="day-meta-txt">meta ${fmt(metaDia)}</div>
+        ${realHtml}${recalcHtml}
+        <div class="day-bar-b"><div class="day-bar-f" style="width:${barW}%"></div></div>`;
+      if (!isDom) div.addEventListener('click', () => isFut?openModalFut(c):openModal(c));
+    }
+    calCont.appendChild(div);
+  });
+}
+renderCalendario();
 
 // ── MODAL ─────────────────────────────────────────────────────
 function openModal(c) {
-  const isHoje=c.d===HOJE;
+  const isHoje=c.d===getHOJE();
   const metaDia=metaOrig('total');
   const realT=c.real?c.real.total:0;
   const pct=Math.round(realT/metaDia*100);
