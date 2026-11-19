@@ -1586,8 +1586,8 @@ function filtroQueda(f) {
 
 function _getQueadaFiltrada() {
   const all = [...QUEDA_MAIN, ...QUEDA_OUTROS];
-  if(_qFiltro==='aa')   return all.filter(c=>c.q_aa);
-  if(_qFiltro==='mm')   return all.filter(c=>c.q_mm);
+  if(_qFiltro==='aa')   return all.filter(c=>c.q_aa&&!c.q_mm);
+  if(_qFiltro==='mm')   return all.filter(c=>c.q_mm&&!c.q_aa);
   if(_qFiltro==='both') return all.filter(c=>c.q_aa&&c.q_mm);
   return all;
 }
