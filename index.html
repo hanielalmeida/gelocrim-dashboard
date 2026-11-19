@@ -524,7 +524,7 @@ footer span { font-size:11px; color:var(--fg3); }
   <div class="section-label">Volumes por produto · mês corrente</div>
   <div style="font-size:11px;color:var(--fg3);text-align:right;line-height:1.5;">
     <div style="font-weight:600;letter-spacing:1px;text-transform:uppercase;font-size:9px;margin-bottom:2px;">Última atualização</div>
-    <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--fg2);">${new Date().toLocaleDateString('pt-BR')}</div>
+    <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--fg2);"><span class="dyn-date">—</span></div>
   </div>
 </div>
 <div class="toast" id="toast">✓ Comando copiado — cole no Claude para atualizar</div>
@@ -550,7 +550,7 @@ footer span { font-size:11px; color:var(--fg3); }
 
 <footer>
   <span>Fator Calendário = dias úteis totais ÷ dias úteis acumulados até ontem &nbsp;·&nbsp; Tendência = Acumulado × Fator</span>
-  <span>Controladoria Gelocrim &nbsp;·&nbsp; Atualizado ${new Date().toLocaleDateString('pt-BR')}</span>
+  <span>Controladoria Gelocrim &nbsp;·&nbsp; Atualizado <span class="dyn-date">—</span></span>
 </footer>
 
 </div><!-- /tab-tendencia -->
@@ -613,13 +613,13 @@ footer span { font-size:11px; color:var(--fg3); }
       <thead>
         <tr>
           <th style="text-align:left;padding-left:24px;">Cliente<span class="th-sub">badge = gatilho da queda</span></th>
-          <th>Últ. Compra<span class="th-sub">em ${LBL_MES_NOME.toLowerCase()}</span></th>
+          <th>Últ. Compra<span class="th-sub" id="th-ult-mes">em —</span></th>
           <th>Próx. Est.<span class="th-sub">histórico 90d</span></th>
-          <th>Acum "+LBL_MES+"<span class="th-sub">realizado 2–15/11</span></th>
-          <th>Tend '+LBL_MES+'<span class="th-sub">projeção do mês</span></th>
-          <th class="th-aa">Real '+LBL_MES_AA+'<span class="th-sub">mesmo mês ano ant.</span></th>
+          <th id="th-acum-mes">Acum —<span class="th-sub">realizado 2–d{dia}/mês</span></th>
+          <th id="th-tend-mes">Tend —<span class="th-sub">projeção do mês</span></th>
+          <th class="th-aa" id="th-real-aa">Real —<span class="th-sub">mesmo mês ano ant.</span></th>
           <th class="th-aa">Δ a/a<span class="th-sub">tend ÷ nov/25</span></th>
-          <th class="th-mm">Real '+LBL_MES_ANT+'<span class="th-sub">mês anterior</span></th>
+          <th class="th-mm" id="th-real-ant">Real —<span class="th-sub">mês anterior</span></th>
           <th class="th-mm">Δ m/m<span class="th-sub">tend ÷ out/26</span></th>
         </tr>
       </thead>
@@ -630,7 +630,7 @@ footer span { font-size:11px; color:var(--fg3); }
 
 <footer>
   <span>Queda: Δ a/a &lt; −10% ou Δ m/m &lt; −10% &nbsp;·&nbsp; Referência: vol. &gt; 20 un./mês</span>
-  <span>Controladoria Gelocrim &nbsp;·&nbsp; Atualizado ${new Date().toLocaleDateString('pt-BR')}</span>
+  <span>Controladoria Gelocrim &nbsp;·&nbsp; Atualizado <span class="dyn-date">—</span></span>
 </footer>
 
 </div><!-- /tab-queda -->
@@ -649,14 +649,14 @@ footer span { font-size:11px; color:var(--fg3); }
       Inativos 180d <span class="sg-ct" id="sg-ct-180d">112</span>
     </button>
     <button class="sg-btn" id="sg-nov25" onclick="switchGrupo('nov25',this)">
-      Compraram '+LBL_MES_AA+' <span class="sg-ct" id="sg-ct-nov25" style="background:#B52B1A;color:#fff;">88</span>
+      Compraram <span id="sg-lbl-aa">—</span> <span class="sg-ct" id="sg-ct-nov25" style="background:#B52B1A;color:#fff;">88</span>
     </button>
     <button class="sg-btn" id="sg-tratados" onclick="switchGrupo('tratados',this)">
       Perdidos Definitivos <span class="sg-ct" id="sg-ct-tratados">0</span>
     </button>
   </div>
   <div style="font-size:11px;color:var(--fg3);text-align:right;line-height:1.5;">
-    <div id="sg-desc" style="color:var(--fg2);font-size:12px;">Compraram em '+LBL_MES_ANT+' mas nunca compram em ${LBL_MES_NOME.toLowerCase()}</div>
+    <div id="sg-desc" style="color:var(--fg2);font-size:12px;">Compraram em <span id="sg-lbl-ant2">—</span> mas nunca compram em <span id="sg-lbl-mes-nome">—</span></div>
   </div>
 </div>
 
@@ -670,8 +670,8 @@ footer span { font-size:11px; color:var(--fg3); }
 </div>
 
 <footer>
-  <span id="zerados-footer-left">Sazonal = sem compra em '+LBL_MES+' e '+LBL_MES_AA+' · Ativo em '+LBL_MES_ANT+' ou '+LBL_MES_ANT2+'</span>
-  <span>Controladoria Gelocrim &nbsp;·&nbsp; Atualizado ${new Date().toLocaleDateString('pt-BR')}</span>
+  <span id="zerados-footer-left">Sazonal = sem compra em <span id="zr-lbl-mes">—</span> e <span id="zr-lbl-aa">—</span> · Ativo em <span id="zr-lbl-ant">—</span> ou <span id="zr-lbl-ant2">—</span></span>
+  <span>Controladoria Gelocrim &nbsp;·&nbsp; Atualizado <span class="dyn-date">—</span></span>
 </footer>
 
 </div><!-- /tab-zerados -->
@@ -683,8 +683,8 @@ footer span { font-size:11px; color:var(--fg3); }
 
 <div class="bd-filters">
   <select class="bd-select" id="bd-modo" onchange="renderBase()">
-    <option value="nov26">${LBL_MES}/${LBL_ANO_LONGO} — Detalhe por Parceiro</option>
-              <option value="nov26_dia">${LBL_MES}/${LBL_ANO_LONGO} — Por Dia (agregado)</option>
+    <option value="nov26" id="opt-nov26">— Detalhe por Parceiro</option>
+              <option value="nov26_dia" id="opt-nov26-dia">— Por Dia (agregado)</option>
     <option value="hist">Histórico Mensal (2024–2026)</option>
   </select>
   <select class="bd-select" id="bd-prod" onchange="renderBase()">
@@ -720,8 +720,8 @@ footer span { font-size:11px; color:var(--fg3); }
 </div>
 
 <footer>
-  <span id="bd-footer-info">Base de Dados Gelocrim · ${LBL_MES}/${LBL_ANO_LONGO} · Gelocrim (Empresa 4)</span>
-  <span>Sincronizado ${new Date().toLocaleDateString('pt-BR')}</span>
+  <span id="bd-footer-info">Base de Dados Gelocrim · <span id="bd-mes-ano">—</span> · Gelocrim (Empresa 4)</span>
+  <span>Sincronizado <span class="dyn-date">—</span></span>
 </footer>
 
 </div><!-- /tab-base -->
@@ -912,7 +912,26 @@ function renderTendencia() {
   }).join('');
 }
 renderTendencia();
-(function(){ const el=document.getElementById('h-sub-mes'); if(el) el.textContent=LBL_MES_NOME+' '+LBL_ANO_LONGO+' · Acumulado até '+(window._HOJE_SB||HOJE-1)+'/'+LBL_MES_NUM; })();
+(function(){
+  const el=document.getElementById('h-sub-mes');
+  if(el) el.textContent=LBL_MES_NOME+' '+LBL_ANO_LONGO+' · Acumulado até '+(window._HOJE_SB||HOJE-1)+'/'+LBL_MES_NUM;
+  const set=(id,v)=>{ const e=document.getElementById(id); if(e) e.textContent=v; };
+  const hj=new Date().toLocaleDateString('pt-BR');
+  document.querySelectorAll('.dyn-date').forEach(e=>e.textContent=hj);
+  set('sg-lbl-aa',LBL_MES_AA); set('sg-lbl-ant2',LBL_MES_ANT); set('sg-lbl-mes-nome',LBL_MES_NOME.toLowerCase());
+  set('zr-lbl-mes',LBL_MES); set('zr-lbl-aa',LBL_MES_AA); set('zr-lbl-ant',LBL_MES_ANT); set('zr-lbl-ant2',LBL_MES_ANT2);
+  set('opt-nov26',LBL_MES+'/'+LBL_ANO_LONGO+' — Detalhe por Parceiro');
+  set('opt-nov26-dia',LBL_MES+'/'+LBL_ANO_LONGO+' — Por Dia (agregado)');
+  set('bd-mes-ano',LBL_MES+'/'+LBL_ANO_LONGO);
+  // Cabeçalhos da tabela queda — preserva o th-sub
+  const pTh=(id,txt,sub)=>{ const th=document.getElementById(id); if(!th) return;
+    const s=th.querySelector('.th-sub'); th.childNodes[0].nodeValue=txt+' '; if(s&&sub) s.textContent=sub; };
+  pTh('th-acum-mes','Acum '+LBL_MES,'realizado 2–'+(window._HOJE_SB||HOJE-1)+'/'+LBL_MES_NUM);
+  pTh('th-tend-mes','Tend '+LBL_MES,null);
+  pTh('th-real-aa','Real '+LBL_MES_AA,null);
+  pTh('th-real-ant','Real '+LBL_MES_ANT,null);
+  const thUlt=document.getElementById('th-ult-mes'); if(thUlt) thUlt.textContent='em '+LBL_MES_NOME.toLowerCase();
+})();
 
 // ── CALENDÁRIO DATA ───────────────────────────────────────────
 const META_MES = { total:92000,'05KG':28000,'10KG':29000,'20KG':15000,'40KG':20000 };
