@@ -496,7 +496,7 @@ footer span { font-size:11px; color:var(--fg3); }
     <div class="h-pill">Gelocrim</div>
     <div>
       <div class="h-title">Volumes — Tendência de Produção</div>
-      <div class="h-sub">Novembro 2026 &nbsp;·&nbsp; Acumulado até 16/11</div>
+      <div class="h-sub" id="h-sub-mes">Carregando...</div>
     </div>
   </div>
   <div class="h-fator" id="h-fator-box">
@@ -524,7 +524,7 @@ footer span { font-size:11px; color:var(--fg3); }
   <div class="section-label">Volumes por produto · mês corrente</div>
   <div style="font-size:11px;color:var(--fg3);text-align:right;line-height:1.5;">
     <div style="font-weight:600;letter-spacing:1px;text-transform:uppercase;font-size:9px;margin-bottom:2px;">Última atualização</div>
-    <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--fg2);">17/11/2026 08:00</div>
+    <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--fg2);">${new Date().toLocaleDateString('pt-BR')}</div>
   </div>
 </div>
 <div class="toast" id="toast">✓ Comando copiado — cole no Claude para atualizar</div>
@@ -550,7 +550,7 @@ footer span { font-size:11px; color:var(--fg3); }
 
 <footer>
   <span>Fator Calendário = dias úteis totais ÷ dias úteis acumulados até ontem &nbsp;·&nbsp; Tendência = Acumulado × Fator</span>
-  <span>Controladoria Gelocrim &nbsp;·&nbsp; Atualizado 17/11/2026</span>
+  <span>Controladoria Gelocrim &nbsp;·&nbsp; Atualizado ${new Date().toLocaleDateString('pt-BR')}</span>
 </footer>
 
 </div><!-- /tab-tendencia -->
@@ -613,13 +613,13 @@ footer span { font-size:11px; color:var(--fg3); }
       <thead>
         <tr>
           <th style="text-align:left;padding-left:24px;">Cliente<span class="th-sub">badge = gatilho da queda</span></th>
-          <th>Últ. Compra<span class="th-sub">em novembro</span></th>
+          <th>Últ. Compra<span class="th-sub">em ${LBL_MES_NOME.toLowerCase()}</span></th>
           <th>Próx. Est.<span class="th-sub">histórico 90d</span></th>
-          <th>Acum Nov/26<span class="th-sub">realizado 2–15/11</span></th>
-          <th>Tend Nov/26<span class="th-sub">projeção do mês</span></th>
-          <th class="th-aa">Real Nov/25<span class="th-sub">mesmo mês ano ant.</span></th>
+          <th>Acum "+LBL_MES+"<span class="th-sub">realizado 2–15/11</span></th>
+          <th>Tend '+LBL_MES+'<span class="th-sub">projeção do mês</span></th>
+          <th class="th-aa">Real '+LBL_MES_AA+'<span class="th-sub">mesmo mês ano ant.</span></th>
           <th class="th-aa">Δ a/a<span class="th-sub">tend ÷ nov/25</span></th>
-          <th class="th-mm">Real Out/26<span class="th-sub">mês anterior</span></th>
+          <th class="th-mm">Real '+LBL_MES_ANT+'<span class="th-sub">mês anterior</span></th>
           <th class="th-mm">Δ m/m<span class="th-sub">tend ÷ out/26</span></th>
         </tr>
       </thead>
@@ -630,7 +630,7 @@ footer span { font-size:11px; color:var(--fg3); }
 
 <footer>
   <span>Queda: Δ a/a &lt; −10% ou Δ m/m &lt; −10% &nbsp;·&nbsp; Referência: vol. &gt; 20 un./mês</span>
-  <span>Controladoria Gelocrim &nbsp;·&nbsp; Atualizado 17/11/2026</span>
+  <span>Controladoria Gelocrim &nbsp;·&nbsp; Atualizado ${new Date().toLocaleDateString('pt-BR')}</span>
 </footer>
 
 </div><!-- /tab-queda -->
@@ -649,14 +649,14 @@ footer span { font-size:11px; color:var(--fg3); }
       Inativos 180d <span class="sg-ct" id="sg-ct-180d">112</span>
     </button>
     <button class="sg-btn" id="sg-nov25" onclick="switchGrupo('nov25',this)">
-      Compraram Nov/25 <span class="sg-ct" id="sg-ct-nov25" style="background:#B52B1A;color:#fff;">88</span>
+      Compraram '+LBL_MES_AA+' <span class="sg-ct" id="sg-ct-nov25" style="background:#B52B1A;color:#fff;">88</span>
     </button>
     <button class="sg-btn" id="sg-tratados" onclick="switchGrupo('tratados',this)">
       Perdidos Definitivos <span class="sg-ct" id="sg-ct-tratados">0</span>
     </button>
   </div>
   <div style="font-size:11px;color:var(--fg3);text-align:right;line-height:1.5;">
-    <div id="sg-desc" style="color:var(--fg2);font-size:12px;">Compraram em Out/26 mas nunca compram em novembro</div>
+    <div id="sg-desc" style="color:var(--fg2);font-size:12px;">Compraram em '+LBL_MES_ANT+' mas nunca compram em ${LBL_MES_NOME.toLowerCase()}</div>
   </div>
 </div>
 
@@ -670,8 +670,8 @@ footer span { font-size:11px; color:var(--fg3); }
 </div>
 
 <footer>
-  <span id="zerados-footer-left">Sazonal = sem compra em Nov/26 e Nov/25 · Ativo em Out/26 ou Set/26</span>
-  <span>Controladoria Gelocrim &nbsp;·&nbsp; Atualizado 17/11/2026</span>
+  <span id="zerados-footer-left">Sazonal = sem compra em '+LBL_MES+' e '+LBL_MES_AA+' · Ativo em '+LBL_MES_ANT+' ou '+LBL_MES_ANT2+'</span>
+  <span>Controladoria Gelocrim &nbsp;·&nbsp; Atualizado ${new Date().toLocaleDateString('pt-BR')}</span>
 </footer>
 
 </div><!-- /tab-zerados -->
@@ -683,8 +683,8 @@ footer span { font-size:11px; color:var(--fg3); }
 
 <div class="bd-filters">
   <select class="bd-select" id="bd-modo" onchange="renderBase()">
-    <option value="nov26">Nov/2026 — Detalhe por Parceiro</option>
-              <option value="nov26_dia">Nov/2026 — Por Dia (agregado)</option>
+    <option value="nov26">${LBL_MES}/${LBL_ANO_LONGO} — Detalhe por Parceiro</option>
+              <option value="nov26_dia">${LBL_MES}/${LBL_ANO_LONGO} — Por Dia (agregado)</option>
     <option value="hist">Histórico Mensal (2024–2026)</option>
   </select>
   <select class="bd-select" id="bd-prod" onchange="renderBase()">
@@ -720,8 +720,8 @@ footer span { font-size:11px; color:var(--fg3); }
 </div>
 
 <footer>
-  <span id="bd-footer-info">Base de Dados Gelocrim · Nov/2026 · Gelocrim (Empresa 4)</span>
-  <span>Sincronizado 17/11/2026 08:00</span>
+  <span id="bd-footer-info">Base de Dados Gelocrim · ${LBL_MES}/${LBL_ANO_LONGO} · Gelocrim (Empresa 4)</span>
+  <span>Sincronizado ${new Date().toLocaleDateString('pt-BR')}</span>
 </footer>
 
 </div><!-- /tab-base -->
@@ -840,6 +840,23 @@ function switchTab(id, btn) {
 }
 
 // ── TENDÊNCIA DATA ────────────────────────────────────────────
+// ── RÓTULOS DE MÊS DINÂMICOS ─────────────────────────────────────
+(function(){
+  const _D=new Date(), _M=_D.getMonth(), _Y=_D.getFullYear();
+  const _NM=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const _NL=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const y2=s=>String(s).slice(2);
+  const pM=(m,y)=>m>0?[_M-m,y]:[12+_M-m,_M-m<0?y-1:y]; // unused helper
+  window.LBL_MES     = _NM[_M]+'/'+y2(_Y);                              // LBL_MES
+  window.LBL_MES_ANT = _NM[_M>0?_M-1:11]+'/'+y2(_M>0?_Y:_Y-1);        // LBL_MES_ANT
+  window.LBL_MES_AA  = _NM[_M]+'/'+y2(_Y-1);                            // LBL_MES_AA
+  window.LBL_MES_ANT2= _NM[_M>1?_M-2:10+_M]+'/'+y2(_M>1?_Y:_Y-1);     // LBL_MES_ANT2
+  window.LBL_MES_NUM = String(_M+1).padStart(2,'0');                     // "11"
+  window.LBL_MES_NOME= _NL[_M];                                          // "Novembro"
+  window.LBL_ANO     = y2(_Y);                                           // "26"
+  window.LBL_ANO_LONGO = String(_Y);                                     // "2026"
+})();
+
 let FATOR = 25 / 13;
 let HOJE = 17;
 const DATA = [
@@ -877,7 +894,7 @@ function renderTendencia() {
     {lbl:'Tendência Mês Atual', val:fmt(totTend()),  cls:'',              hi:true },
     {lbl:'Meta de Produção',    val:fmt(totMeta()),  cls:'',              hi:false},
     {lbl:'% Tendência / Meta',  val:pctMeta()+'%',   cls:kpiCls(pctMeta()), hi:true },
-    {lbl:'Ano Passado — Nov/25',val:fmt(totApTot()), cls:'c-gold',        hi:false},
+    {lbl:'Ano Passado — '+LBL_MES_AA,val:fmt(totApTot()), cls:'c-gold',        hi:false},
   ].map(k=>`<div class="kpi-cell${k.hi?' highlight':''}"><div class="kpi-lbl">${k.lbl}</div><div class="kpi-num ${k.cls}">${k.val}</div></div>`).join('');
 
   document.getElementById('tbody').innerHTML = DATA.map(d => {
@@ -895,13 +912,14 @@ function renderTendencia() {
   }).join('');
 }
 renderTendencia();
+(function(){ const el=document.getElementById('h-sub-mes'); if(el) el.textContent=LBL_MES_NOME+' '+LBL_ANO_LONGO+' · Acumulado até '+(window._HOJE_SB||HOJE-1)+'/'+LBL_MES_NUM; })();
 
 // ── CALENDÁRIO DATA ───────────────────────────────────────────
 const META_MES = { total:92000,'05KG':28000,'10KG':29000,'20KG':15000,'40KG':20000 };
 const DIAS_UTEIS = 25;
 const PRODUTOS = ['05KG','10KG','20KG','40KG'];
 
-// ── BONIF POR CLIENTE Nov/26 ──────────────────────────────────────
+// ── BONIF POR CLIENTE '+LBL_MES+' ──────────────────────────────────────
 const BONIF_NOV26 = {
   4312:41,
   5604:11,
@@ -1440,7 +1458,7 @@ function renderMetas() {
   if (!bar) return;
   bar.innerHTML = [
     {cls:'c-grey', lbl:'Meta Mensal Total',    val:fmt(META_MES.total), det:`${DIAS_UTEIS} dias úteis · ${fmt(metaOrig('total'))}/dia`},
-    {cls:'c-blue', lbl:`Realizado (02–${ultimoDia}/11)`, val:fmt(rat), det:`${dcr} dias · média ${fmt(Math.round(rat/dcr))}/dia`},
+    {cls:'c-blue', lbl:`Realizado (02–${ultimoDia}/${LBL_MES_NUM})`, val:fmt(rat), det:`${dcr} dias · média ${fmt(Math.round(rat/dcr))}/dia`},
     {cls:'c-warn', lbl:'Meta Recalculada/Dia', val:fmt(Math.round(RECALC.total)), det:`${fmt(META_MES.total-rat)} restante ÷ ${diasRest()} dias`},
     {cls:'c-green',lbl:'Gap Acumulado',        val:(rat-metaOrig('total')*dcr>=0?'+':'')+fmt(Math.round(rat-metaOrig('total')*dcr)), det:'diluído nos próximos dias'},
   ].map(c=>`<div class="meta-card ${c.cls}"><div class="m-lbl">${c.lbl}</div><div class="m-val">${c.val}</div><div class="m-det">${c.det}</div></div>`).join('');
@@ -1497,7 +1515,7 @@ renderCalendario();
 // ── MODAL ─────────────────────────────────────────────────────
 function exportQuedasCSV() {
   const all = [...QUEDA_MAIN, ...QUEDA_OUTROS];
-  const header = ['Cod','Nome','Acum Nov','Tend Nov','Out/26','Nov/25','Var m/m %','Var a/a %','Próx. Compra','Intervalo (d)','Última Compra','05KG','10KG','20KG','40KG'];
+  const header = ['Cod','Nome','Acum Nov','Tend Nov',LBL_MES_ANT,LBL_MES_AA,'Var m/m %','Var a/a %','Próx. Compra','Intervalo (d)','Última Compra','05KG','10KG','20KG','40KG'];
   const rows = all.map(c => [
     c.cod, '"'+c.nome+'"', c.acum, c.tend, c.out26, c.nov25||0,
     c.dm_m!==null?c.dm_m.toFixed(1):'', c.da_a!==null?c.da_a.toFixed(1):'',
@@ -1604,23 +1622,23 @@ function openSCModal(grp, cod) {
   let c, groupLabel, badgeCls, volRef, volRef2, volRef3, refLabel, ref2Label, ref3Label;
 
   if (grp === 'nov25') {
-    c = SC_NOV25.find(x=>x.cod===cod); groupLabel = 'Sem Compra — Compraram Nov/25'; badgeCls = 's-danger';
-    volRef = c.vol_nov25||0; refLabel = 'Vol Nov/25';
-    volRef2 = c.vol_out26||0; ref2Label = 'Vol Out/26';
+    c = SC_NOV25.find(x=>x.cod===cod); groupLabel = 'Sem Compra — Compraram '+LBL_MES_AA; badgeCls = 's-danger';
+    volRef = c.vol_nov25||0; refLabel = 'Vol '+LBL_MES_AA;
+    volRef2 = c.vol_out26||0; ref2Label = 'Vol '+LBL_MES_ANT;
     volRef3 = c.dias; ref3Label = 'Dias Sem Compra';
   } else if (grp === 'saz') {
     c = SC_SAZONAL.find(x=>x.cod===cod); groupLabel = 'Sem Compra — Padrão Sazonal'; badgeCls = 's-warn';
-    volRef = c.vol_out26||0; refLabel = 'Vol Out/26';
-    volRef2 = c.vol_set26||0; ref2Label = 'Vol Set/26';
+    volRef = c.vol_out26||0; refLabel = 'Vol '+LBL_MES_ANT;
+    volRef2 = c.vol_set26||0; ref2Label = 'Vol '+LBL_MES_ANT2;
     volRef3 = c.dias; ref3Label = 'Dias Sem Compra';
   } else {
     c = SC_180D.find(x=>x.cod===cod); groupLabel = 'Sem Compra — Inativo 180d+'; badgeCls = 's-danger';
-    volRef = c.vol_nov25||0; refLabel = 'Vol Nov/25';
+    volRef = c.vol_nov25||0; refLabel = 'Vol '+LBL_MES_AA;
     volRef2 = c.vol12m_antes||0; ref2Label = 'Vol 12m (antes)';
     volRef3 = c.dias; ref3Label = 'Dias Sem Compra';
   }
 
-  // Bonif Nov/26 recebida
+  // Bonif '+LBL_MES+' recebida
   const bonifVol = BONIF_NOV26[c.cod] || 0;
 
   // KPIs — mirrors Queda strip
@@ -1631,25 +1649,25 @@ function openSCModal(grp, cod) {
     + '</div>';
 
   // Product section — volumes de referência (últimos meses disponíveis)
-  // Sem faturamento Nov/26, mostramos Out/26 e Set/26 (ou Nov/25) como referência
+  // Sem faturamento '+LBL_MES+', mostramos '+LBL_MES_ANT+' e '+LBL_MES_ANT2+' (ou '+LBL_MES_AA+') como referência
   const hasOut = c.vol_out26 && c.vol_out26 > 0;
   let prodsHtml = '<div class="m-sec-lbl">Volumes de Referência (últimos dados)</div>'
     + '<div class="qm-hist" style="flex-wrap:wrap;">';
   if (grp === 'nov25') {
-    prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">Nov/25 (perdido)</div><div class="qm-h-val c-danger">'+fmt(c.vol_nov25||0)+' un</div></div>';
-    prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">Out/26</div><div class="qm-h-val">'+(c.vol_out26?fmt(c.vol_out26):'—')+'</div></div>';
-    prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">Status</div><div class="qm-h-val">'+(c.ativo_out?'<span style="color:var(--warn);font-weight:600;">Ativo Out/26</span>':'<span style="color:var(--danger);">Inativo</span>')+'</div></div>';
+    prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">'+LBL_MES_AA+' (perdido)</div><div class="qm-h-val c-danger">'+fmt(c.vol_nov25||0)+' un</div></div>';
+    prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">'+LBL_MES_ANT+'</div><div class="qm-h-val">'+(c.vol_out26?fmt(c.vol_out26):'—')+'</div></div>';
+    prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">Status</div><div class="qm-h-val">'+(c.ativo_out?'<span style="color:var(--warn);font-weight:600;">Ativo '+LBL_MES_ANT+'</span>':'<span style="color:var(--danger);">Inativo</span>')+'</div></div>';
   } else if (grp === 'saz') {
-    prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">Out/26</div><div class="qm-h-val">'+fmt(c.vol_out26||0)+' un</div></div>';
-    prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">Set/26</div><div class="qm-h-val">'+fmt(c.vol_set26||0)+' un</div></div>';
+    prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">'+LBL_MES_ANT+'</div><div class="qm-h-val">'+fmt(c.vol_out26||0)+' un</div></div>';
+    prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">'+LBL_MES_ANT2+'</div><div class="qm-h-val">'+fmt(c.vol_set26||0)+' un</div></div>';
     prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">12 Meses</div><div class="qm-h-val">'+fmt(c.vol12m||0)+' un</div></div>';
   } else {
-    prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">Nov/25</div><div class="qm-h-val">'+(c.vol_nov25?fmt(c.vol_nov25):'—')+'</div></div>';
+    prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">'+LBL_MES_AA+'</div><div class="qm-h-val">'+(c.vol_nov25?fmt(c.vol_nov25):'—')+'</div></div>';
     prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">12m Antes</div><div class="qm-h-val">'+fmt(c.vol12m_antes||0)+' un</div></div>';
-    prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">Status</div><div class="qm-h-val">'+(c.ativo_out?'<span style="color:var(--warn);font-weight:600;">Ativo Out/26</span>':'<span style="color:var(--danger);">Inativo</span>')+'</div></div>';
+    prodsHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">Status</div><div class="qm-h-val">'+(c.ativo_out?'<span style="color:var(--warn);font-weight:600;">Ativo '+LBL_MES_ANT+'</span>':'<span style="color:var(--danger);">Inativo</span>')+'</div></div>';
   }
   if (bonifVol > 0) {
-    prodsHtml += '<div class="qm-hist-card" style="background:rgba(0,168,80,.08);border:1px solid rgba(0,168,80,.2);"><div class="qm-h-lbl">Bonificado Nov/26</div><div class="qm-h-val c-ok">'+fmt(bonifVol)+' un</div></div>';
+    prodsHtml += '<div class="qm-hist-card" style="background:rgba(0,168,80,.08);border:1px solid rgba(0,168,80,.2);"><div class="qm-h-lbl">Bonificado '+LBL_MES+'</div><div class="qm-h-val c-ok">'+fmt(bonifVol)+' un</div></div>';
   }
   prodsHtml += '</div>';
 
@@ -1658,7 +1676,7 @@ function openSCModal(grp, cod) {
   const histHtml = '<div class="m-sec-lbl">Histórico</div>'
     + '<div class="qm-hist">'
     + '<div class="qm-hist-card"><div class="qm-h-lbl">Última Compra</div><div class="qm-h-val c-blue">'+(ult||'—')+'</div></div>'
-    + (grp==='nov25'?'<div class="qm-hist-card"><div class="qm-h-lbl">Últ. Compra Nov/25</div><div class="qm-h-val">'+(c.ultimo_nov25||'—')+'</div></div>':'')
+    + (grp==='nov25'?'<div class="qm-hist-card"><div class="qm-h-lbl">Últ. Compra '+LBL_MES_AA+'</div><div class="qm-h-val">'+(c.ultimo_nov25||'—')+'</div></div>':'')
     + '<div class="qm-hist-card"><div class="qm-h-lbl">Dias Sem Compra</div><div class="qm-h-val c-danger">'+c.dias+'d</div></div>'
     + '</div>';
 
@@ -1698,7 +1716,7 @@ function openSCModal(grp, cod) {
         + '<div class="modal-date">'+c.nome+'</div>'
         + '<div style="font-family:\'DM Mono\',monospace;font-size:11px;color:rgba(255,255,255,.45);margin-top:3px;letter-spacing:.5px;">Cód. '+c.cod+'</div>'
         + '<div class="modal-dow" style="display:flex;gap:6px;margin-top:6px;">'
-          + '<span style="background:rgba(181,43,26,.3);color:#FFB0A5;border-radius:3px;padding:2px 7px;font-size:11px;font-weight:700;">SC — Sem Compra Nov/26</span>'
+          + '<span style="background:rgba(181,43,26,.3);color:#FFB0A5;border-radius:3px;padding:2px 7px;font-size:11px;font-weight:700;">SC — Sem Compra '+LBL_MES+'</span>'
         + '</div>'
       + '</div>'
       + '<button class="modal-close" onclick="closeModal()">×</button>'
@@ -1857,7 +1875,7 @@ const qSev = c => {
   QUEDA_MAIN.forEach(c=>{const ref=Math.max(c.nov25||0,c.out26||0);if(ref>0)volRisco+=Math.max(0,ref-c.tend);});
   const hoje=new Date(); const hStr=hoje.getFullYear()+'-'+(hoje.getMonth()+1<10?'0':'')+(hoje.getMonth()+1)+'-'+(hoje.getDate()<10?'0':'')+hoje.getDate(); const proxHoje=allQ.filter(c=>c.proximo&&c.proximo<=hStr);
   document.getElementById('kpi-queda').innerHTML=[
-    {lbl:'Clientes em Queda',val:String(allQ.length),cls:'c-danger',hi:true,det:'dos 253 ativos em Nov/26'},
+    {lbl:'Clientes em Queda',val:String(allQ.length),cls:'c-danger',hi:true,det:'dos 253 ativos em '+LBL_MES},
     {lbl:'Maior Queda a/a',val:piorAA?(piorAA.da_a>=0?'+':'')+piorAA.da_a.toFixed(0)+'%':'—',cls:'c-danger',hi:true,det:piorAA?piorAA.nome.split(' ').slice(0,2).join(' '):'—'},
     {lbl:'Maior Queda m/m',val:piorMM?(piorMM.dm_m>=0?'+':'')+piorMM.dm_m.toFixed(0)+'%':'—',cls:'c-danger',hi:false,det:piorMM?piorMM.nome.split(' ').slice(0,2).join(' '):'—'},
     {lbl:'Volume em Risco',val:fmt(volRisco),cls:'c-warn',hi:true,det:'tend. abaixo da referência'},
@@ -1904,11 +1922,11 @@ function openQueadaModal(idx) {
   const c=QUEDA_MAIN[idx];
   const totalProd=Object.values(c.prod).reduce((s,v)=>s+v,0);
   const kpisHtml='<div class="m-kpis">'
-    +'<div class="m-kpi"><div class="lbl">Acum Nov/26</div><div class="val">'+fmt(c.acum)+'</div></div>'
-    +'<div class="m-kpi"><div class="lbl">Tend Nov/26</div><div class="val blue">'+fmt(c.tend)+'</div></div>'
+    +'<div class="m-kpi"><div class="lbl">Acum '+LBL_MES+'</div><div class="val">'+fmt(c.acum)+'</div></div>'
+    +'<div class="m-kpi"><div class="lbl">Tend '+LBL_MES+'</div><div class="val blue">'+fmt(c.tend)+'</div></div>'
     +'<div class="m-kpi"><div class="lbl">Δ a/a</div><div class="val '+(c.da_a===null?'':(c.da_a<=-10?'danger':(c.da_a>=10?'ok':'')))+'">'+(c.da_a!==null?(c.da_a>=0?'+':'')+c.da_a.toFixed(1)+'%':'—')+'</div></div>'
     +'</div>';
-  const prodsHtml='<div class="m-sec-lbl">Acumulado Nov/26 — por produto</div>'
+  const prodsHtml='<div class="m-sec-lbl">Acumulado '+LBL_MES+' — por produto</div>'
     +'<div class="qm-prod-grid">'+['05KG','10KG','20KG','40KG'].map(k=>{
       const v=c.prod[k]||0, pct=totalProd>0?Math.round(v/totalProd*100):0;
       return '<div class="qm-prod-card">'
@@ -1919,11 +1937,11 @@ function openQueadaModal(idx) {
     }).join('')+'</div>';
   const histHtml='<div class="m-sec-lbl">Histórico</div>'
     +'<div class="qm-hist">'
-    +'<div class="qm-hist-card"><div class="qm-h-lbl">Últ. Compra Nov/26</div><div class="qm-h-val">'+(qFmtDate(c.ultimo)||'—')+'</div></div>'
+    +'<div class="qm-hist-card"><div class="qm-h-lbl">Últ. Compra '+LBL_MES+'</div><div class="qm-h-val">'+(qFmtDate(c.ultimo)||'—')+'</div></div>'
     +'<div class="qm-hist-card"><div class="qm-h-lbl">Próx. Estimada</div><div class="qm-h-val c-blue">'+(qFmtDate(c.proximo)||'—')+'</div></div>'
     +'<div class="qm-hist-card"><div class="qm-h-lbl">Δ m/m</div><div class="qm-h-val '+(c.dm_m===null?'c-na':(c.dm_m<=-10?'c-danger':(c.dm_m>=10?'c-ok':'')))+'">'+(c.dm_m!==null?(c.dm_m>=0?'+':'')+c.dm_m.toFixed(1)+'%':'—')+'</div></div>'
-    +'<div class="qm-hist-card"><div class="qm-h-lbl">Real Nov/25</div><div class="qm-h-val '+(c.nov25?'':'c-na')+'">'+(c.nov25?fmt(c.nov25):'sem hist.')+'</div></div>'
-    +'<div class="qm-hist-card"><div class="qm-h-lbl">Real Out/26</div><div class="qm-h-val '+(c.out26?'':'c-na')+'">'+(c.out26?fmt(c.out26):'sem hist.')+'</div></div>'
+    +'<div class="qm-hist-card"><div class="qm-h-lbl">Real '+LBL_MES_AA+'</div><div class="qm-h-val '+(c.nov25?'':'c-na')+'">'+(c.nov25?fmt(c.nov25):'sem hist.')+'</div></div>'
+    +'<div class="qm-hist-card"><div class="qm-h-lbl">Real '+LBL_MES_ANT+'</div><div class="qm-h-val '+(c.out26?'':'c-na')+'">'+(c.out26?fmt(c.out26):'sem hist.')+'</div></div>'
     +'<div class="qm-hist-card"><div class="qm-h-lbl">Δ a/a</div><div class="qm-h-val '+(c.da_a===null?'c-na':(c.da_a<=-10?'c-danger':(c.da_a>=10?'c-ok':'')))+'">'+(c.da_a!==null?(c.da_a>=0?'+':'')+c.da_a.toFixed(1)+'%':'—')+'</div></div>'
     +'</div>';
 
@@ -1943,11 +1961,11 @@ function openQueadaModal(idx) {
     if (cevItemsRaw.length > 1) {
       cevHtml += '<div class="qm-hist-card" style="background:rgba(0,100,200,.06);"><div class="qm-h-lbl">Cap. Total ('+cevItemsRaw.length+' equip.)</div><div class="qm-h-val c-blue">'+capTotal+' kg</div></div>';
     }
-    if (mixProds) cevHtml += '<div class="qm-hist-card" style="min-width:200px;"><div class="qm-h-lbl">Mix Nov/26</div><div class="qm-h-val" style="font-size:11px;">'+mixProds+'</div></div>';
+    if (mixProds) cevHtml += '<div class="qm-hist-card" style="min-width:200px;"><div class="qm-h-lbl">Mix '+LBL_MES+'</div><div class="qm-h-val" style="font-size:11px;">'+mixProds+'</div></div>';
   } else {
     cevHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">Equipamentos</div>'
       +'<div class="qm-h-val c-na">Sem CEV ativo</div></div>';
-    if (mixProds) cevHtml += '<div class="qm-hist-card" style="min-width:200px;"><div class="qm-h-lbl">Mix Nov/26</div><div class="qm-h-val" style="font-size:11px;">'+mixProds+'</div></div>';
+    if (mixProds) cevHtml += '<div class="qm-hist-card" style="min-width:200px;"><div class="qm-h-lbl">Mix '+LBL_MES+'</div><div class="qm-h-val" style="font-size:11px;">'+mixProds+'</div></div>';
   }
   cevHtml += '</div>';
   // Previsão de compra
@@ -2018,9 +2036,9 @@ function openOutrosModal() {
           +'<th style="padding:10px 16px;text-align:left;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg3);">Cliente</th>'
           +'<th style="padding:10px 16px;text-align:right;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg3);">Acum</th>'
           +'<th style="padding:10px 16px;text-align:right;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green-mid);">Tend</th>'
-          +'<th style="padding:10px 16px;text-align:right;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg3);">Nov/25</th>'
+          +'<th style="padding:10px 16px;text-align:right;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg3);">'+LBL_MES_AA+'</th>'
           +'<th style="padding:10px 16px;text-align:right;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg3);">Δ a/a</th>'
-          +'<th style="padding:10px 16px;text-align:right;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg3);">Out/26</th>'
+          +'<th style="padding:10px 16px;text-align:right;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg3);">'+LBL_MES_ANT+'</th>'
           +'<th style="padding:10px 16px;text-align:right;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg3);">Δ m/m</th>'
         +'</tr></thead>'
         +'<tbody>'+rows+'</tbody>'
@@ -2209,10 +2227,10 @@ function renderZerados() {
 
   // descrição
   document.getElementById('sg-desc').textContent = isSaz
-    ? 'Compraram em Out/26 mas sem compra em Nov/26 nem Nov/25 — padrão sazonal'
+    ? 'Compraram em '+LBL_MES_ANT+' mas sem compra em '+LBL_MES+' nem '+LBL_MES_AA+' — padrão sazonal'
     : 'Sem nenhuma compra nos últimos 180 dias — clientes inativos';
   document.getElementById('zerados-footer-left').textContent = isSaz
-    ? 'Sazonal = ativo em Out/26 ou Set/26 · sem compra em Nov/26 e Nov/25'
+    ? 'Sazonal = ativo em '+LBL_MES_ANT+' ou '+LBL_MES_ANT2+' · sem compra em '+LBL_MES+' e '+LBL_MES_AA
     : 'Inativo 180d = última compra anterior a 14/mai/2026';
 
   // KPI
@@ -2220,16 +2238,16 @@ function renderZerados() {
   const maxDias = data.length ? Math.max(...data.map(c=>c.dias)) : 0;
   const semNov25 = isSaz ? data.filter(c=>c.vol_out26>0).length : 0;
   const kpis = isSaz ? [
-    {lbl:'Clientes Sazonais',     val:String(SC_SAZONAL.length), cls:'c-warn', hi:true,  det:'sem compra em Nov/26 e Nov/25'},
-    {lbl:'Volume Out/26 Total',   val:fmt(data.reduce((s,c)=>s+c.vol_out26,0)), cls:'', hi:true, det:'volume do mês anterior'},
+    {lbl:'Clientes Sazonais',     val:String(SC_SAZONAL.length), cls:'c-warn', hi:true,  det:'sem compra em '+LBL_MES+' e '+LBL_MES_AA},
+    {lbl:'Volume '+LBL_MES_ANT+' Total',   val:fmt(data.reduce((s,c)=>s+c.vol_out26,0)), cls:'', hi:true, det:'volume do mês anterior'},
     {lbl:'Volume 12 Meses',       val:fmt(totalVol), cls:'', hi:false, det:'últimos 12 meses'},
-    {lbl:'Ativos em Out/26',      val:String(semNov25), cls:'c-warn', hi:false, det:'compraram em outubro'},
+    {lbl:'Ativos em '+LBL_MES_ANT,      val:String(semNov25), cls:'c-warn', hi:false, det:'compraram em outubro'},
     {lbl:'Dias desde últ. compra',val:maxDias+'d', cls:'', hi:false, det:'máximo do grupo'},
   ] : [
     {lbl:'Inativos 180d',         val:String(SC_180D.length), cls:'c-danger', hi:true,  det:'sem compra desde mai/2026'},
     {lbl:'Mais de 300 dias',      val:String(data.filter(c=>c.dias>=300).length), cls:'c-danger', hi:true, det:'clientes críticos'},
     {lbl:'Volume 12m Anterior',   val:fmt(totalVol), cls:'', hi:false, det:'antes da inatividade'},
-    {lbl:'Sem histórico Nov/25',  val:String(data.filter(c=>c.vol_nov25===0).length), cls:'', hi:false, det:'nunca compraram em nov'},
+    {lbl:'Sem histórico '+LBL_MES_AA,  val:String(data.filter(c=>c.vol_nov25===0).length), cls:'', hi:false, det:'nunca compraram em nov'},
     {lbl:'Dias Máx. Inativo',     val:maxDias+'d', cls:'c-danger', hi:true, det:'cliente mais antigo'},
   ];
   document.getElementById('kpi-zerados').innerHTML = kpis.map(k =>
@@ -2240,18 +2258,18 @@ function renderZerados() {
   document.getElementById('zerados-thead').innerHTML = isSaz
     ? `<tr>
         <th style="text-align:left;padding-left:24px;">Cliente<span class="th-sub">razão social · código</span></th>
-        <th>Última Compra<span class="th-sub">em novembro</span></th>
+        <th>Última Compra<span class="th-sub">em ${LBL_MES_NOME.toLowerCase()}</span></th>
         <th>Dias<span class="th-sub">sem comprar</span></th>
-        <th>Vol Out/26<span class="th-sub">mês anterior</span></th>
-        <th>Vol Set/26</th>
+        <th>Vol "+LBL_MES_ANT+"<span class="th-sub">mês anterior</span></th>
+        <th>Vol "+LBL_MES_ANT2+"</th>
         <th>Vol 12 meses<span class="th-sub">últ. 12 meses</span></th>
-        <th>Bonif Nov/26<span class="th-sub">bonificação recebida</span></th>
+        <th>Bonif "+LBL_MES+"<span class="th-sub">bonificação recebida</span></th>
        </tr>`
     : `<tr>
         <th style="text-align:left;padding-left:24px;">Cliente<span class="th-sub">razão social · código</span></th>
         <th>Última Compra<span class="th-sub">data</span></th>
         <th>Inativo<span class="th-sub">dias sem compra</span></th>
-        <th>Vol Nov/25<span class="th-sub">mesmo mês ano ant.</span></th>
+        <th>Vol "+LBL_MES_AA+"<span class="th-sub">mesmo mês ano ant.</span></th>
         <th>Vol 2026<span class="th-sub">antes da inatividade</span></th>
         <th>Vol 12m Antes<span class="th-sub">período anterior</span></th>
        </tr>`;
@@ -2280,30 +2298,30 @@ function renderZerados() {
 // ── PERDIDOS DEFINITIVOS (classificação futura) ──────────────
 
 const SC_TRATADOS = [
-  {cod:14816,nome:'ILHA GELADA CAMPOS S',status:'perdido',motivo:'Trocou de fornecedor',novo:null,grupo:'Compraram Nov/25',vol:1127,dias:178},
-  {cod:5122,nome:'SR COMERCIO DE BEBIDAS LTDA',status:'perdido',motivo:'Eventos — sazonalidade.',novo:null,grupo:'Compraram Nov/25',vol:774,dias:52},
-  {cod:1851,nome:'CONVENIENCIA MOTTA',status:'perdido',motivo:'Mudou de fornecedor',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:401,dias:331},
-  {cod:4219,nome:'PIT STOP TORQUATO',status:'perdido',motivo:'Trocou fornecedor — insatisfação com pallets da máquina.',novo:null,grupo:'Compraram Nov/25',vol:375,dias:83},
-  {cod:16005,nome:'MANICE SILVA MAIA',status:'perdido',motivo:'Equip. próprio + compra gelo granel de outro fornecedor.',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:355,dias:316},
-  {cod:3526,nome:'RENAN BARBOSA',status:'perdido',motivo:'Mudou de fornecedor',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:288,dias:274},
-  {cod:16388,nome:'ANDERLEY SOUZA',status:'perdido',motivo:'Parou de vender gelo',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:275,dias:230},
-  {cod:1781,nome:'COEMA COMERC DE PROD ALIME LTDA CAMAPUA',status:'perdido',motivo:'Comprou máquina',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:225,dias:320},
-  {cod:15394,nome:'PREFEITURA PRESIDENT',status:'perdido',motivo:'Eventos — sazonalidade',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:212,dias:337},
-  {cod:5059,nome:'SUPREME PESCADOS',status:'perdido',motivo:'Cliente balcao, granel',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:200,dias:365},
-  {cod:15151,nome:'SALOME BAR',status:'perdido',motivo:'Comprou máquina de gelo, está suprindo a necessidade',novo:null,grupo:'Compraram Nov/25',vol:180,dias:94},
-  {cod:4573,nome:'A L PRODUCOES',status:'perdido',motivo:'Eventos — sazonalidade.',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:179,dias:366},
-  {cod:1935,nome:'R D SERVICOS DE ALIMENTACAO LTDA',status:'perdido',motivo:'Fechou',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:96,dias:195},
-  {cod:3907,nome:'MARINA AGUAS CLARAS',status:'perdido',motivo:'Cliente fechado devido periodo de seca',novo:null,grupo:'Compraram Nov/25',vol:84,dias:51},
-  {cod:3538,nome:'CONVENIENCIA 24H',status:'perdido',motivo:'Fechou',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:69,dias:220},
-  {cod:3798,nome:'UNIEMPREENDIMENTOS LTDA',status:'perdido',motivo:'Eventos — sazonalidade.',novo:null,grupo:'Compraram Nov/25',vol:66,dias:98},
-  {cod:3838,nome:'KAIRO OLIVEIRA CORDEIRO BK IRANDUBA LTDA',status:'perdido',motivo:'Trocou fornecedor — insatisfação com máquina, apresentava problemas constantes.',novo:null,grupo:'Compraram Nov/25',vol:62,dias:114},
-  {cod:3999,nome:'CHOPERIA IBIZA LTDA',status:'perdido',motivo:'Unidade Vieiralves fechou.',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:38,dias:199},
-  {cod:5014,nome:'CASA DE CARNE SOPHIA',status:'perdido',motivo:'Sem potencial de vendas',novo:null,grupo:'Compraram Nov/25',vol:34,dias:87},
-  {cod:4987,nome:'CTA - CLEITON TAXI AEREO LTDA.',status:'perdido',motivo:'Cliente de aviação, utilizam poucas quantidades e não estavam mais precisando',novo:null,grupo:'Compraram Nov/25',vol:30,dias:136},
-  {cod:14735,nome:'PICANHA MANIA',status:'perdido',motivo:'Trocou fornecedor - não quis continuar por causa de preço',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:30,dias:357},
-  {cod:3846,nome:'FRANCIMAR PEREIRA DE SOUZA',status:'perdido',motivo:'Sem potencial de vendas',novo:null,grupo:'Compraram Nov/25',vol:25,dias:106},
-  {cod:5188,nome:'LUIZ CARLOS PINHEIRO DA SILVA- CASA LUPP',status:'perdido',motivo:'Trocou fornecedor — insatisfação com máquina, apresentava problemas constantes e queria uma maior.',novo:null,grupo:'Compraram Nov/25',vol:22,dias:139},
-  {cod:5023,nome:'AILTON (VEGAS LAVA JATO)',status:'perdido',motivo:'Sem potencial',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:20,dias:364},
+  {cod:14816,nome:'ILHA GELADA CAMPOS S',status:'perdido',motivo:'Trocou de fornecedor',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:1127,dias:178},
+  {cod:5122,nome:'SR COMERCIO DE BEBIDAS LTDA',status:'perdido',motivo:'Eventos — sazonalidade.',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:774,dias:52},
+  {cod:1851,nome:'CONVENIENCIA MOTTA',status:'perdido',motivo:'Mudou de fornecedor',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:401,dias:331},
+  {cod:4219,nome:'PIT STOP TORQUATO',status:'perdido',motivo:'Trocou fornecedor — insatisfação com pallets da máquina.',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:375,dias:83},
+  {cod:16005,nome:'MANICE SILVA MAIA',status:'perdido',motivo:'Equip. próprio + compra gelo granel de outro fornecedor.',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:355,dias:316},
+  {cod:3526,nome:'RENAN BARBOSA',status:'perdido',motivo:'Mudou de fornecedor',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:288,dias:274},
+  {cod:16388,nome:'ANDERLEY SOUZA',status:'perdido',motivo:'Parou de vender gelo',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:275,dias:230},
+  {cod:1781,nome:'COEMA COMERC DE PROD ALIME LTDA CAMAPUA',status:'perdido',motivo:'Comprou máquina',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:225,dias:320},
+  {cod:15394,nome:'PREFEITURA PRESIDENT',status:'perdido',motivo:'Eventos — sazonalidade',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:212,dias:337},
+  {cod:5059,nome:'SUPREME PESCADOS',status:'perdido',motivo:'Cliente balcao, granel',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:200,dias:365},
+  {cod:15151,nome:'SALOME BAR',status:'perdido',motivo:'Comprou máquina de gelo, está suprindo a necessidade',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:180,dias:94},
+  {cod:4573,nome:'A L PRODUCOES',status:'perdido',motivo:'Eventos — sazonalidade.',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:179,dias:366},
+  {cod:1935,nome:'R D SERVICOS DE ALIMENTACAO LTDA',status:'perdido',motivo:'Fechou',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:96,dias:195},
+  {cod:3907,nome:'MARINA AGUAS CLARAS',status:'perdido',motivo:'Cliente fechado devido periodo de seca',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:84,dias:51},
+  {cod:3538,nome:'CONVENIENCIA 24H',status:'perdido',motivo:'Fechou',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:69,dias:220},
+  {cod:3798,nome:'UNIEMPREENDIMENTOS LTDA',status:'perdido',motivo:'Eventos — sazonalidade.',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:66,dias:98},
+  {cod:3838,nome:'KAIRO OLIVEIRA CORDEIRO BK IRANDUBA LTDA',status:'perdido',motivo:'Trocou fornecedor — insatisfação com máquina, apresentava problemas constantes.',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:62,dias:114},
+  {cod:3999,nome:'CHOPERIA IBIZA LTDA',status:'perdido',motivo:'Unidade Vieiralves fechou.',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:38,dias:199},
+  {cod:5014,nome:'CASA DE CARNE SOPHIA',status:'perdido',motivo:'Sem potencial de vendas',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:34,dias:87},
+  {cod:4987,nome:'CTA - CLEITON TAXI AEREO LTDA.',status:'perdido',motivo:'Cliente de aviação, utilizam poucas quantidades e não estavam mais precisando',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:30,dias:136},
+  {cod:14735,nome:'PICANHA MANIA',status:'perdido',motivo:'Trocou fornecedor - não quis continuar por causa de preço',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:30,dias:357},
+  {cod:3846,nome:'FRANCIMAR PEREIRA DE SOUZA',status:'perdido',motivo:'Sem potencial de vendas',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:25,dias:106},
+  {cod:5188,nome:'LUIZ CARLOS PINHEIRO DA SILVA- CASA LUPP',status:'perdido',motivo:'Trocou fornecedor — insatisfação com máquina, apresentava problemas constantes e queria uma maior.',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:22,dias:139},
+  {cod:5023,nome:'AILTON (VEGAS LAVA JATO)',status:'perdido',motivo:'Sem potencial',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:20,dias:364},
   {cod:16673,nome:'DRINKS MONIQUE BAR',status:'perdido',motivo:'Mudou de fornecedor',novo:null,grupo:'Inativos 180d',vol:16,dias:347},
   {cod:5170,nome:'CRISTHIAN SANTOS DISTRIBUIDORA',status:'perdido',motivo:'Sem potencial de vendas',novo:null,grupo:'Inativos 180d',vol:15,dias:301},
   {cod:4981,nome:'IMPRESSOS.COM',status:'perdido',motivo:'Sem potencial de vendas',novo:null,grupo:'Inativos 180d',vol:15,dias:272},
@@ -2369,29 +2387,29 @@ const SC_TRATADOS = [
   {cod:16371,nome:'NOVA ERA SILVES',status:'perdido',motivo:'Não compra mais 40kg porque adquiriu máquina e o gelo pequeno eles não possuem equipamento pra armazenar',novo:null,grupo:'Inativos 180d',vol:0,dias:541},
   {cod:4293,nome:'PANIFICADORA CINTIA',status:'perdido',motivo:'Fechou',novo:null,grupo:'Inativos 180d',vol:0,dias:479},
   {cod:5212,nome:'RAFAELA L. KLEIN E CIA LTDA',status:'perdido',motivo:'Sem potencial de vendas',novo:null,grupo:'Inativos 180d',vol:0,dias:316},
-  {cod:16699,nome:'ASSAI ATACADISTA AV EPHIGENIO',status:'negociacao',motivo:'Bloqueio financeiro',novo:null,grupo:'Compraram Nov/25',vol:300,dias:80},
-  {cod:4765,nome:'CONVENI?NCIA FUTURO',status:'negociacao',motivo:'Bloqueio financeiro',novo:null,grupo:'Compraram Nov/25',vol:198,dias:86},
-  {cod:4215,nome:'EDUARDO FERNANDES MARTINS',status:'negociacao',motivo:'Parou de vender gelo + bloqueio financeiro.',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:130,dias:294},
-  {cod:16561,nome:'CASTANHEIRA CONVENIENCIA',status:'negociacao',motivo:'bloqueio financeiro',novo:null,grupo:'Compraram Nov/25',vol:95,dias:149},
-  {cod:3990,nome:'JAPETO BAR E RESTAURANTE',status:'negociacao',motivo:'Trocou fornecedor — queria equip. para Gelo 20KG.',novo:null,grupo:'Compraram Nov/25',vol:80,dias:139},
-  {cod:16307,nome:'MANUEL PINHEIRO NEVES',status:'negociacao',motivo:'Eventos — sazonalidade + bloqueio financeiro',novo:null,grupo:'Compraram Nov/25',vol:74,dias:156},
-  {cod:1990,nome:'SUPERMERCADOS DB JAPIIM LTDA',status:'negociacao',motivo:'Pendência financeira — financeiro tratando.',novo:null,grupo:'Compraram Nov/25',vol:40,dias:115},
+  {cod:16699,nome:'ASSAI ATACADISTA AV EPHIGENIO',status:'negociacao',motivo:'Bloqueio financeiro',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:300,dias:80},
+  {cod:4765,nome:'CONVENI?NCIA FUTURO',status:'negociacao',motivo:'Bloqueio financeiro',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:198,dias:86},
+  {cod:4215,nome:'EDUARDO FERNANDES MARTINS',status:'negociacao',motivo:'Parou de vender gelo + bloqueio financeiro.',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:130,dias:294},
+  {cod:16561,nome:'CASTANHEIRA CONVENIENCIA',status:'negociacao',motivo:'bloqueio financeiro',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:95,dias:149},
+  {cod:3990,nome:'JAPETO BAR E RESTAURANTE',status:'negociacao',motivo:'Trocou fornecedor — queria equip. para Gelo 20KG.',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:80,dias:139},
+  {cod:16307,nome:'MANUEL PINHEIRO NEVES',status:'negociacao',motivo:'Eventos — sazonalidade + bloqueio financeiro',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:74,dias:156},
+  {cod:1990,nome:'SUPERMERCADOS DB JAPIIM LTDA',status:'negociacao',motivo:'Pendência financeira — financeiro tratando.',novo:null,grupo:'Compraram '+LBL_MES_AA,vol:40,dias:115},
   {cod:3546,nome:'BRUNO MANOEL DA MOTA GARCIA',status:'negociacao',motivo:'Trocou fornecedor — insatisfação com valores.',novo:null,grupo:'Inativos 180d',vol:0,dias:190},
   {cod:1840,nome:'DISTRIBUIDORA BIBI',status:'negociacao',motivo:'Trocou fornecedor — insatisfação com valores.',novo:null,grupo:'Inativos 180d',vol:0,dias:189},
-  {cod:4635,nome:'RUY GIRAO DE BRITO JUNIOR',status:'migrado',motivo:'Mudou de codigo',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:550,dias:261},
-  {cod:3944,nome:'MARCELO CAVALCANTE DA SILVA',status:'migrado',motivo:'Mudou de codigo para',novo:16162,grupo:'Compraram Nov/25 + Inativos 180d',vol:520,dias:219},
-  {cod:16696,nome:'TOP',status:'migrado',motivo:'Mudou de codigo para',novo:5468,grupo:'Compraram Nov/25 + Inativos 180d',vol:356,dias:185},
-  {cod:16303,nome:'BARRACA DO COCO',status:'migrado',motivo:'Mudou de codigo para',novo:5269,grupo:'Compraram Nov/25 + Inativos 180d',vol:350,dias:304},
-  {cod:16493,nome:'DISTRIBUIDORA STYLOS MIX PUB CONVEN',status:'migrado',motivo:'Mudou de codigo para',novo:4434,grupo:'Compraram Nov/25',vol:221,dias:59},
-  {cod:4808,nome:'CONVEN UPP LTDA',status:'migrado',motivo:'Mudou de código',novo:2045,grupo:'Compraram Nov/25',vol:198,dias:164},
-  {cod:4983,nome:'CONVENIENCIA PITSTOP',status:'migrado',motivo:'Mudou de codigo para',novo:5283,grupo:'Compraram Nov/25 + Inativos 180d',vol:144,dias:296},
-  {cod:4751,nome:'DU GAS COM VAR DE GAS LIQUEF DE PET LTDA',status:'migrado',motivo:'Mudou de codigo para',novo:5287,grupo:'Compraram Nov/25 + Inativos 180d',vol:135,dias:295},
-  {cod:16694,nome:'CONVENIENCIA SAO LUIZ',status:'migrado',motivo:'Mudou de código',novo:5548,grupo:'Compraram Nov/25',vol:134,dias:169},
-  {cod:15244,nome:'MUSIC NUIT',status:'migrado',motivo:'Mudou de codigo para',novo:16282,grupo:'Compraram Nov/25 + Inativos 180d',vol:104,dias:309},
-  {cod:5099,nome:'ZR EXPRESS - ALEX POSTO DISTRITO',status:'migrado',motivo:'Mudou de codigo para',novo:5702,grupo:'Compraram Nov/25',vol:87,dias:80},
-  {cod:4216,nome:'REGINALDO LIMA DE SOUZA',status:'migrado',motivo:'Código motorista',novo:null,grupo:'Compraram Nov/25 + Inativos 180d',vol:70,dias:365},
-  {cod:2394,nome:'POSTO DISTRITO',status:'migrado',motivo:'Mudou de codigo para',novo:5342,grupo:'Compraram Nov/25 + Inativos 180d',vol:40,dias:248},
-  {cod:4487,nome:'UP2 MARKET PONTA NEGRA',status:'migrado',motivo:'Mudou de código',novo:4176,grupo:'Compraram Nov/25',vol:30,dias:154},
+  {cod:4635,nome:'RUY GIRAO DE BRITO JUNIOR',status:'migrado',motivo:'Mudou de codigo',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:550,dias:261},
+  {cod:3944,nome:'MARCELO CAVALCANTE DA SILVA',status:'migrado',motivo:'Mudou de codigo para',novo:16162,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:520,dias:219},
+  {cod:16696,nome:'TOP',status:'migrado',motivo:'Mudou de codigo para',novo:5468,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:356,dias:185},
+  {cod:16303,nome:'BARRACA DO COCO',status:'migrado',motivo:'Mudou de codigo para',novo:5269,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:350,dias:304},
+  {cod:16493,nome:'DISTRIBUIDORA STYLOS MIX PUB CONVEN',status:'migrado',motivo:'Mudou de codigo para',novo:4434,grupo:'Compraram '+LBL_MES_AA,vol:221,dias:59},
+  {cod:4808,nome:'CONVEN UPP LTDA',status:'migrado',motivo:'Mudou de código',novo:2045,grupo:'Compraram '+LBL_MES_AA,vol:198,dias:164},
+  {cod:4983,nome:'CONVENIENCIA PITSTOP',status:'migrado',motivo:'Mudou de codigo para',novo:5283,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:144,dias:296},
+  {cod:4751,nome:'DU GAS COM VAR DE GAS LIQUEF DE PET LTDA',status:'migrado',motivo:'Mudou de codigo para',novo:5287,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:135,dias:295},
+  {cod:16694,nome:'CONVENIENCIA SAO LUIZ',status:'migrado',motivo:'Mudou de código',novo:5548,grupo:'Compraram '+LBL_MES_AA,vol:134,dias:169},
+  {cod:15244,nome:'MUSIC NUIT',status:'migrado',motivo:'Mudou de codigo para',novo:16282,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:104,dias:309},
+  {cod:5099,nome:'ZR EXPRESS - ALEX POSTO DISTRITO',status:'migrado',motivo:'Mudou de codigo para',novo:5702,grupo:'Compraram '+LBL_MES_AA,vol:87,dias:80},
+  {cod:4216,nome:'REGINALDO LIMA DE SOUZA',status:'migrado',motivo:'Código motorista',novo:null,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:70,dias:365},
+  {cod:2394,nome:'POSTO DISTRITO',status:'migrado',motivo:'Mudou de codigo para',novo:5342,grupo:'Compraram '+LBL_MES_AA+' + Inativos 180d',vol:40,dias:248},
+  {cod:4487,nome:'UP2 MARKET PONTA NEGRA',status:'migrado',motivo:'Mudou de código',novo:4176,grupo:'Compraram '+LBL_MES_AA,vol:30,dias:154},
   {cod:16186,nome:'TORQUATO CONVENIENCIA',status:'migrado',motivo:'Mudou de codigo',novo:null,grupo:'Inativos 180d',vol:0,dias:546},
   {cod:3665,nome:'INTER CENTRO CONVENIENCIA 24H',status:'migrado',motivo:'Mudou de código',novo:4735,grupo:'Inativos 180d',vol:0,dias:511},
   {cod:2414,nome:'INTER JACIRA REIS',status:'migrado',motivo:'Mudou de código',novo:4733,grupo:'Inativos 180d',vol:0,dias:525},
@@ -2421,7 +2439,7 @@ renderZerados = function() {
   document.getElementById('sg-desc').textContent =
     'Clientes sem compras classificados pela equipe comercial com motivo registrado';
   document.getElementById('zerados-footer-left').textContent =
-    'Perdidos Definitivos · base da planilha de justificativas · 17/11/2026';
+    'Perdidos Definitivos · base da planilha de justificativas · ${new Date().toLocaleDateString('pt-BR')}';
 
   const nPerdido   = SC_TRATADOS.filter(c=>c.status==='perdido').length;
   const nNegoc     = SC_TRATADOS.filter(c=>c.status==='negociacao').length;
@@ -2432,7 +2450,7 @@ renderZerados = function() {
   document.getElementById('sg-ct-tratados').textContent = SC_TRATADOS.length;
   document.getElementById('kpi-zerados').innerHTML = [
     {lbl:'Classificados',   val:fmt(SC_TRATADOS.length), cls:'c-danger', hi:true,  det:nPerdido+' perdidos · '+nMigrado+' migrados · '+nNegoc+' em negociação'},
-    {lbl:'Volume Referência',val:fmt(volPerdido),         cls:'c-danger', hi:false, det:'soma vol Nov/25 ou Out/26 dos perdidos'},
+    {lbl:'Volume Referência',val:fmt(volPerdido),         cls:'c-danger', hi:false, det:'soma vol '+LBL_MES_AA+' ou '+LBL_MES_ANT+' dos perdidos'},
     {lbl:'Tempo Médio',     val:diasMed+'d',              cls:'',         hi:false, det:'dias sem compra (média)'},
     {lbl:'Em Negociação',   val:String(nNegoc),           cls:'c-warn',   hi:false, det:'bloqueio financeiro ou troca recuperável'},
     {lbl:'Migrados',        val:String(nMigrado),         cls:'c-gold',   hi:false, det:'mudaram de código de cliente'},
@@ -2463,7 +2481,7 @@ renderZerados = function() {
     if (!g) return '—';
     if (g.includes('Sazonal')) return 'Sazonal';
     if (g.includes('180d') || g.includes('Inativos')) return '180d+';
-    if (g.includes('Nov/25') || g.includes('Compraram')) return 'Nov/25';
+    if (g.includes(LBL_MES_AA) || g.includes('Compraram')) return LBL_MES_AA;
     return g;
   };
 
@@ -2602,7 +2620,7 @@ renderZerados = function() {
     'Compraram em Novembro/25 mas ainda não compraram em Novembro/26 — volume em risco: ' +
     data.reduce((s,c)=>s+c.vol_nov25,0).toLocaleString('pt-BR') + ' un.';
   document.getElementById('zerados-footer-left').textContent =
-    'Ausentes Nov/26 · comparativo com Nov/25 · ordenado por volume';
+    'Ausentes '+LBL_MES+' · comparativo com '+LBL_MES_AA+' · ordenado por volume';
 
   // KPI
   const ativos = data.filter(c=>c.ativo_out).length;
@@ -2610,21 +2628,21 @@ renderZerados = function() {
   const volRisco = data.reduce((s,c)=>s+c.vol_nov25,0);
   const volOut = data.reduce((s,c)=>s+c.vol_out26,0);
   document.getElementById('kpi-zerados').innerHTML = [
-    {lbl:'Ausentes de Nov/26', val:String(data.length),    cls:'c-danger', hi:true,  det:'compraram em Nov/25'},
-    {lbl:'Volume em Risco',    val:fmt(volRisco),           cls:'c-danger', hi:true,  det:'volume de Nov/25 não repetido'},
-    {lbl:'Ativos em Out/26',   val:String(ativos),          cls:'c-warn',   hi:false, det:'compraram em outubro — podem voltar'},
-    {lbl:'Sem compra recente', val:String(inativos),        cls:'c-danger', hi:true,  det:'inativo desde Nov/25 ou antes'},
-    {lbl:'Vol Out/26 (ativos)',val:fmt(volOut),             cls:'',         hi:false, det:'potencial se mantiverem frequência'},
+    {lbl:'Ausentes de '+LBL_MES, val:String(data.length),    cls:'c-danger', hi:true,  det:'compraram em '+LBL_MES_AA},
+    {lbl:'Volume em Risco',    val:fmt(volRisco),           cls:'c-danger', hi:true,  det:'volume de '+LBL_MES_AA+' não repetido'},
+    {lbl:'Ativos em '+LBL_MES_ANT,   val:String(ativos),          cls:'c-warn',   hi:false, det:'compraram em outubro — podem voltar'},
+    {lbl:'Sem compra recente', val:String(inativos),        cls:'c-danger', hi:true,  det:'inativo desde '+LBL_MES_AA+' ou antes'},
+    {lbl:'Vol '+LBL_MES_ANT+' (ativos)',val:fmt(volOut),             cls:'',         hi:false, det:'potencial se mantiverem frequência'},
   ].map(k=>`<div class="kpi-cell${k.hi?' highlight':''}"><div class="kpi-lbl">${k.lbl}</div><div class="kpi-num ${k.cls}">${k.val}</div><div style="font-size:11px;color:var(--fg3);margin-top:4px;">${k.det}</div></div>`).join('');
 
   // thead
   document.getElementById('zerados-thead').innerHTML = `<tr>
     <th style="text-align:left;padding-left:24px;">Cliente<span class="th-sub">razão social · código</span></th>
-    <th>Últ. Compra Nov/25<span class="th-sub">referência ano ant.</span></th>
+    <th>Últ. Compra "+LBL_MES_AA+"<span class="th-sub">referência ano ant.</span></th>
     <th>Últ. Compra<span class="th-sub">data mais recente</span></th>
     <th>Dias<span class="th-sub">sem comprar</span></th>
-    <th>Vol Nov/25<span class="th-sub">volume em risco</span></th>
-    <th>Vol Out/26<span class="th-sub">mês anterior</span></th>
+    <th>Vol "+LBL_MES_AA+"<span class="th-sub">volume em risco</span></th>
+    <th>Vol "+LBL_MES_ANT+"<span class="th-sub">mês anterior</span></th>
     <th>Status</th>
   </tr>`;
 
@@ -2632,7 +2650,7 @@ renderZerados = function() {
   const rows = data.map((c,ci) => {
     const st = c.dias > 180 ? 's-danger' : c.ativo_out ? 's-warn' : 's-danger';
     const statusHtml = c.ativo_out
-      ? '<span class="badge b-warn" style="font-size:11px;">Ativo Out/26</span>'
+      ? '<span class="badge b-warn" style="font-size:11px;">Ativo '+LBL_MES_ANT+'</span>'
       : '<span class="badge b-danger" style="font-size:11px;">Inativo</span>';
     return `<tr class="${st}" style="cursor:pointer;" onclick="openSCModal('nov25',${c.cod})">
       <td><div class="cell-cname"><div class="cname">${c.nome}</div><div style="font-size:10px;color:var(--fg3);font-family:'DM Mono',monospace;margin-top:2px;letter-spacing:.3px;">${c.cod}</div></div></td>
@@ -3706,7 +3724,7 @@ function renderBase() {
     document.getElementById('bd-tbody').innerHTML = rows ||
       '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--fg3);">Nenhum dado para os filtros selecionados</td></tr>';
     document.getElementById('bd-footer-info').textContent =
-      `Nov/2026 · ${data.length} registros · Volume: ${fmt(totVol)} un`;
+      `${LBL_MES}/${LBL_ANO_LONGO} · ${data.length} registros · Volume: ${fmt(totVol)} un`;
 
   } else {
     // BD_GELO: [mes, produto, clientes, notas, vol_liq, fat_liq]
