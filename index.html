@@ -1518,8 +1518,9 @@ function renderCEVHtml(cod, mixProd) {
   let html = '<div class="m-sec-lbl" style="margin-top:16px;">Equipamento</div>'
     + '<div class="qm-hist">';
   if (equips.length > 0) {
-    // Bal\u00E3o 1: uma linha por equipamento
-    const linhas = equips.map(e => 'N\u00BA '+e.cod+' \u00B7 '+(e.prod||'\u2014')).join('<br>');
+    // Bal\u00E3o 1: uma linha por equipamento (nome abreviado)
+    const shortProd = p => (p||'\u2014').replace(/^(CAMARA|CONSERVADOR|MINI CAMARA)\s*/,'').replace(' ZERO GRAU','').replace(' REFRIMATE','').replace(' MONTADA','').trim();
+    const linhas = equips.map(e => 'N\u00BA '+e.cod+' \u00B7 '+shortProd(e.prod)).join('<br>');
     html += '<div class="qm-hist-card" style="min-width:240px;">'
       + '<div class="qm-h-lbl">Equipamentos ('+equips.length+')</div>'
       + '<div class="qm-h-val" style="font-size:12px;line-height:1.9;">'+linhas+'</div>'
