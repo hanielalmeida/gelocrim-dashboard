@@ -380,7 +380,12 @@ footer span { font-size:11px; color:var(--fg3); }
 #tab-queda .tbl-wrap  { overflow:visible; border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
 #tab-queda table      { min-width:960px; }
 /* Sticky thead dentro do scroll container */
-#tab-queda thead th { position:sticky; top:0; z-index:10; }
+#tab-queda thead th { position:sticky; top:0; z-index:10; user-select:none; }
+#tab-queda thead th:hover { opacity:.85; }
+.sort-arrow { font-size:10px; opacity:.5; }
+.sort-arrow.asc::after { content:'▲'; }
+.sort-arrow.desc::after { content:'▼'; }
+.sort-arrow.active { opacity:1; color:var(--green-mid); }
 /* column group tinting */
 #tab-queda th.th-aa  { background:#1A3A5A; }
 #tab-queda th.th-mm  { background:#162E49; }
@@ -610,17 +615,17 @@ footer span { font-size:11px; color:var(--fg3); }
 <div class="tbl-outer">
   <div class="tbl-wrap">
     <table id="queda-table">
-      <thead>
+      <thead id="queda-thead">
         <tr>
-          <th style="text-align:left;padding-left:24px;">Cliente<span class="th-sub">badge = gatilho da queda</span></th>
-          <th>Últ. Compra<span class="th-sub" id="th-ult-mes">em —</span></th>
-          <th>Próx. Est.<span class="th-sub">histórico 90d</span></th>
-          <th id="th-acum-mes">Acum —<span class="th-sub">realizado 2–d{dia}/mês</span></th>
-          <th id="th-tend-mes">Tend —<span class="th-sub">projeção do mês</span></th>
-          <th class="th-aa" id="th-real-aa">Real —<span class="th-sub">mesmo mês ano ant.</span></th>
-          <th class="th-aa">Δ a/a<span class="th-sub">tend ÷ nov/25</span></th>
-          <th class="th-mm" id="th-real-ant">Real —<span class="th-sub">mês anterior</span></th>
-          <th class="th-mm">Δ m/m<span class="th-sub">tend ÷ out/26</span></th>
+          <th style="text-align:left;padding-left:24px;cursor:pointer;" data-sort="nome" onclick="sortQueda('nome')">Cliente <span class="sort-arrow" id="sa-nome"></span><span class="th-sub">badge = gatilho da queda</span></th>
+          <th style="cursor:pointer;" data-sort="ultimo" onclick="sortQueda('ultimo')">Últ. Compra <span class="sort-arrow" id="sa-ultimo"></span><span class="th-sub" id="th-ult-mes">em —</span></th>
+          <th style="cursor:pointer;" data-sort="proximo" onclick="sortQueda('proximo')">Próx. Est. <span class="sort-arrow" id="sa-proximo"></span><span class="th-sub">histórico 90d</span></th>
+          <th id="th-acum-mes" style="cursor:pointer;" onclick="sortQueda('acum')">Acum — <span class="sort-arrow" id="sa-acum"></span><span class="th-sub">realizado 2–d{dia}/mês</span></th>
+          <th id="th-tend-mes" style="cursor:pointer;" onclick="sortQueda('tend')">Tend — <span class="sort-arrow" id="sa-tend"></span><span class="th-sub">projeção do mês</span></th>
+          <th class="th-aa" id="th-real-aa" style="cursor:pointer;" onclick="sortQueda('nov25')">Real — <span class="sort-arrow" id="sa-nov25"></span><span class="th-sub">mesmo mês ano ant.</span></th>
+          <th class="th-aa" style="cursor:pointer;" onclick="sortQueda('da_a')">Δ a/a <span class="sort-arrow" id="sa-da_a"></span><span class="th-sub">tend ÷ nov/25</span></th>
+          <th class="th-mm" id="th-real-ant" style="cursor:pointer;" onclick="sortQueda('out26')">Real — <span class="sort-arrow" id="sa-out26"></span><span class="th-sub">mês anterior</span></th>
+          <th class="th-mm" style="cursor:pointer;" onclick="sortQueda('dm_m')">Δ m/m <span class="sort-arrow" id="sa-dm_m"></span><span class="th-sub">tend ÷ out/26</span></th>
         </tr>
       </thead>
       <tbody id="queda-tbody"></tbody>
@@ -1561,6 +1566,64 @@ function renderCEVHtml(cod, mixProd) {
 
 
 // ── MODAL ─────────────────────────────────────────────────────
+let _qSortCol = 'dm_m', _qSortAsc = true;
+function sortQueda(col) {
+  if (_qSortCol === col) { _qSortAsc = !_qSortAsc; }
+  else { _qSortCol = col; _qSortAsc = col === 'nome'; }
+  // Atualiza setas
+  ['nome','ultimo','proximo','acum','tend','nov25','da_a','out26','dm_m'].forEach(c => {
+    const el = document.getElementById('sa-'+c);
+    if (!el) return;
+    el.className = 'sort-arrow' + (c === _qSortCol ? (' active ' + (_qSortAsc ? 'asc' : 'desc')) : '');
+  });
+  // Re-renderiza
+  const all = [...QUEDA_MAIN, ...QUEDA_OUTROS];
+  all.sort((a, b) => {
+    let va = a[_qSortCol], vb = b[_qSortCol];
+    if (va === null || va === undefined) va = _qSortAsc ? '￿' : -Infinity;
+    if (vb === null || vb === undefined) vb = _qSortAsc ? '￿' : -Infinity;
+    if (typeof va === 'string') return _qSortAsc ? va.localeCompare(vb,'pt-BR') : vb.localeCompare(va,'pt-BR');
+    return _qSortAsc ? va - vb : vb - va;
+  });
+  // Redistribui MAIN/OUTROS preservando a separação original
+  const mainCods = new Set(QUEDA_MAIN.map(c=>c.cod));
+  const sortedMain = all.filter(c => mainCods.has(c.cod));
+  const sortedOtros = all.filter(c => !mainCods.has(c.cod));
+  // Recria as linhas da tabela
+  const tbody = document.querySelector('#tab-queda tbody');
+  if (!tbody) return;
+  let html = '';
+  const mkRow = (c) => {
+    const sv=qSev(c), sCls=sv==='q-danger'?'s-danger':sv==='q-warn'?'s-warn':'s-ok';
+    const prox=qFmtDate(c.proximo);
+    const nov25cell=c.nov25?fmt(c.nov25):'<span style="color:var(--fg3)">—</span>';
+    const out26cell=c.out26?fmt(c.out26):'<span style="color:var(--fg3)">—</span>';
+    return '<tr class="'+sCls+' '+sv+'" onclick="openQueadaModal('+QUEDA_MAIN.indexOf(c)+')">'
+      +'<td><div class="cell-cname"><div class="cname">'+c.nome+'</div><div style="font-size:10px;color:var(--fg3);font-family:\'DM Mono\',monospace;margin-top:2px;letter-spacing:.3px;">'+c.cod+'</div><div class="cbadges">'+qBadges(c)+'</div></div></td>'
+      +'<td><div class="cell-date">'+(qFmtDate(c.ultimo)||'—')+'</div></td>'
+      +'<td><div class="cell-date">'+(prox?'<span class="date-next">'+prox+'</span>':'<span class="date-na">—</span>')+'</div></td>'
+      +'<td><div class="cell">'+fmt(c.acum)+'</div></td>'
+      +'<td><div class="cell cell-tend">'+fmt(c.tend)+'</div></td>'
+      +'<td class="col-aa"><div class="cell" style="color:var(--fg2)">'+nov25cell+'</div></td>'
+      +'<td class="col-aa"><div class="cell-delta">'+qDltBadge(c.da_a,c.q_aa)+'</div></td>'
+      +'<td class="col-mm"><div class="cell" style="color:var(--fg2)">'+out26cell+'</div></td>'
+      +'<td class="col-mm"><div class="cell-delta">'+qDltBadge(c.dm_m,c.q_mm)+'</div></td>'
+      +'</tr>';
+  };
+  sortedMain.forEach(c => { html += mkRow(c); });
+  if (sortedOtros.length > 0) {
+    const otTend=sortedOtros.reduce((s,c)=>s+c.tend,0);
+    html+='<tr class="q-outros" onclick="openOutrosModal()">'
+      +'<td><div class="cell-cname"><div class="outros-label"><span style="font-size:16px;color:var(--fg3);">▶</span>Outros ('+sortedOtros.length+' clientes)</div></div></td>'
+      +'<td colspan="2"></td><td><div class="cell" style="color:var(--fg3)">—</div></td>'
+      +'<td><div class="cell cell-tend" style="opacity:.7">'+fmt(otTend)+'</div></td>'
+      +'<td class="col-aa" colspan="2"><div class="cell" style="text-align:center;color:var(--fg3);font-size:11px;">ver detalhe ▸</div></td>'
+      +'<td class="col-mm" colspan="2"><div class="cell" style="text-align:center;color:var(--fg3);font-size:11px;">ver detalhe ▸</div></td>'
+      +'</tr>';
+  }
+  tbody.innerHTML = html;
+}
+
 function exportQuedasCSV() {
   const all = [...QUEDA_MAIN, ...QUEDA_OUTROS];
   const header = ['Cod','Nome','Acum Nov','Tend Nov',LBL_MES_ANT,LBL_MES_AA,'Var m/m %','Var a/a %','Próx. Compra','Intervalo (d)','Última Compra','05KG','10KG','20KG','40KG'];
