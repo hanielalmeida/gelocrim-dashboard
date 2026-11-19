@@ -1516,35 +1516,24 @@ renderCalendario();
 function renderCEVHtml(cod, mixProd) {
   const equips = (typeof CEV2 !== 'undefined' ? CEV2[cod] : null) || [];
   let html = '<div class="m-sec-lbl" style="margin-top:16px;">Equipamento</div>'
-    + '<div class="qm-hist" style="flex-wrap:wrap;">';
+    + '<div class="qm-hist">';
   if (equips.length > 0) {
-    equips.forEach((e, i) => {
-      const prefix = equips.length > 1 ? '#'+(i+1)+' ' : '';
-      html += '<div class="qm-hist-card">'
-        + '<div class="qm-h-lbl" style="font-size:10px;">'+prefix+'N\u00BA '+e.cod+'</div>'
-        + '<div class="qm-h-val" style="font-size:11px;font-weight:600;">'+(e.prod||'SEM DESCRI\u00C7\u00C3O')+'</div>'
-        + '</div>';
-      const capStr = Object.entries(e.caps).map(([k,v]) => k+': '+v+' un').join(' \u00B7 ');
-      if (capStr) {
-        html += '<div class="qm-hist-card" style="min-width:200px;">'
-          + '<div class="qm-h-lbl">Cap. por Produto</div>'
-          + '<div class="qm-h-val" style="font-size:11px;">'+capStr+'</div>'
-          + '</div>';
-      }
-    });
-    if (equips.length > 1) {
-      const totCaps = {};
-      equips.forEach(e => Object.entries(e.caps).forEach(([k,v]) => totCaps[k]=(totCaps[k]||0)+v));
-      const totStr = Object.entries(totCaps).map(([k,v]) => k+': '+v+' un').join(' \u00B7 ');
-      html += '<div class="qm-hist-card" style="background:rgba(0,100,200,.06);min-width:200px;">'
-        + '<div class="qm-h-lbl">Cap. Total ('+equips.length+' equip.)</div>'
-        + '<div class="qm-h-val" style="font-size:11px;">'+totStr+'</div>'
-        + '</div>';
-    }
-    if (mixProd) html += '<div class="qm-hist-card" style="min-width:200px;"><div class="qm-h-lbl">Mix '+LBL_MES+'</div><div class="qm-h-val" style="font-size:11px;">'+mixProd+'</div></div>';
+    // Bal\u00E3o 1: uma linha por equipamento
+    const linhas = equips.map(e => 'N\u00BA '+e.cod+' \u00B7 '+(e.prod||'\u2014')).join('<br>');
+    html += '<div class="qm-hist-card" style="min-width:240px;">'
+      + '<div class="qm-h-lbl">Equipamentos ('+equips.length+')</div>'
+      + '<div class="qm-h-val" style="font-size:12px;line-height:1.9;">'+linhas+'</div>'
+      + '</div>';
+    // Bal\u00E3o 2: soma total por produto
+    const tot = {};
+    equips.forEach(e => Object.entries(e.caps).forEach(([k,v]) => tot[k]=(tot[k]||0)+v));
+    const totStr = Object.entries(tot).map(([k,v]) => k+': '+v+' un').join(' \u00B7 ');
+    html += '<div class="qm-hist-card" style="min-width:200px;">'
+      + '<div class="qm-h-lbl">Cap. por Produto</div>'
+      + '<div class="qm-h-val" style="font-size:12px;">'+totStr+'</div>'
+      + '</div>';
   } else {
     html += '<div class="qm-hist-card"><div class="qm-h-lbl">Equipamento</div><div class="qm-h-val c-na">Sem CEV ativo</div></div>';
-    if (mixProd) html += '<div class="qm-hist-card" style="min-width:200px;"><div class="qm-h-lbl">Mix '+LBL_MES+'</div><div class="qm-h-val" style="font-size:11px;">'+mixProd+'</div></div>';
   }
   html += '</div>';
   return html;
