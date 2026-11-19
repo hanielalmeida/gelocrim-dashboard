@@ -771,6 +771,7 @@ async function loadVolumesFromSupabase() {
 
     // Re-renderiza as abas que dependem de DATA
     renderTendencia && renderTendencia();
+    renderMetas && renderMetas();
   } catch(e) { console.warn('Supabase load error:', e); }
 }
 
@@ -1412,23 +1413,28 @@ const CAL = [
 ];
 
 function metaOrig(prod) { return META_MES[prod] / DIAS_UTEIS; }
-function acumReal(prod) { return CAL.filter(c=>c.d<HOJE&&c.real).reduce((s,c)=>s+(c.real[prod]||0),0); }
-function diasRest() { return CAL.filter(c=>c.d>=HOJE&&c.peso===1).length; }
+function acumReal(prod) { return CAL.filter(c=>c.d<getHOJE()&&c.real).reduce((s,c)=>s+(c.real[prod]||0),0); }
+function diasRest() { return CAL.filter(c=>c.d>=getHOJE()&&c.peso===1).length; }
 function metaRecalc(prod) { const r=META_MES[prod]-acumReal(prod), dr=diasRest(); return dr>0?r/dr:0; }
 
-const RECALC={};
-PRODUTOS.forEach(p=>{ RECALC[p]=metaRecalc(p); });
-RECALC.total=PRODUTOS.reduce((s,p)=>s+RECALC[p],0);
+function renderMetas() {
+  const RECALC={};
+  PRODUTOS.forEach(p=>{ RECALC[p]=metaRecalc(p); });
+  RECALC.total=PRODUTOS.reduce((s,p)=>s+RECALC[p],0);
 
-// Cards resumo
-const realAcumTotal=CAL.filter(c=>c.d<HOJE&&c.real).reduce((s,c)=>s+c.real.total,0);
-const diasComReal=CAL.filter(c=>c.d<HOJE&&c.real&&c.peso===1).length;
-document.getElementById('cal-meta-bar').innerHTML = [
-  {cls:'c-grey', lbl:'Meta Mensal Total',   val:fmt(META_MES.total), det:`${DIAS_UTEIS} dias úteis · ${fmt(metaOrig('total'))}/dia`},
-  {cls:'c-blue', lbl:'Realizado (02–16/11)',  val:fmt(realAcumTotal),  det:`${diasComReal} dias · média ${fmt(realAcumTotal/diasComReal)}/dia`},
-  {cls:'c-warn', lbl:'Meta Recalculada/Dia',val:fmt(RECALC.total),   det:`${fmt(META_MES.total-realAcumTotal)} restante ÷ ${diasRest()} dias`},
-  {cls:'c-green',lbl:'Gap Acumulado',       val:(realAcumTotal-metaOrig('total')*diasComReal>=0?'+':'')+fmt(realAcumTotal-metaOrig('total')*diasComReal), det:'diluído nos próximos dias'},
-].map(c=>`<div class="meta-card ${c.cls}"><div class="m-lbl">${c.lbl}</div><div class="m-val">${c.val}</div><div class="m-det">${c.det}</div></div>`).join('');
+  const rat=CAL.filter(c=>c.d<getHOJE()&&c.real).reduce((s,c)=>s+c.real.total,0);
+  const dcr=CAL.filter(c=>c.d<getHOJE()&&c.real&&c.peso===1).length;
+  const ultimoDia=getHOJE()-1;
+  const bar = document.getElementById('cal-meta-bar');
+  if (!bar) return;
+  bar.innerHTML = [
+    {cls:'c-grey', lbl:'Meta Mensal Total',    val:fmt(META_MES.total), det:`${DIAS_UTEIS} dias úteis · ${fmt(metaOrig('total'))}/dia`},
+    {cls:'c-blue', lbl:`Realizado (02–${ultimoDia}/11)`, val:fmt(rat), det:`${dcr} dias · média ${fmt(Math.round(rat/dcr))}/dia`},
+    {cls:'c-warn', lbl:'Meta Recalculada/Dia', val:fmt(Math.round(RECALC.total)), det:`${fmt(META_MES.total-rat)} restante ÷ ${diasRest()} dias`},
+    {cls:'c-green',lbl:'Gap Acumulado',        val:(rat-metaOrig('total')*dcr>=0?'+':'')+fmt(Math.round(rat-metaOrig('total')*dcr)), det:'diluído nos próximos dias'},
+  ].map(c=>`<div class="meta-card ${c.cls}"><div class="m-lbl">${c.lbl}</div><div class="m-val">${c.val}</div><div class="m-det">${c.det}</div></div>`).join('');
+}
+renderMetas();
 
 // Render calendário — Nov 1, 2026 = domingo, offset 0
 const calCont = document.getElementById('cal-days');
