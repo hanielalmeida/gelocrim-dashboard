@@ -594,10 +594,16 @@ footer span { font-size:11px; color:var(--fg3); }
 <div class="kpi-strip" id="kpi-queda"></div>
 
 <div class="section-head">
-  <div class="section-label">Clientes com queda &gt; 10% &nbsp;·&nbsp; a/a ou m/m</div>
-  <div style="font-size:11px;color:var(--fg3);text-align:right;line-height:1.5;">
-    <div style="font-weight:600;letter-spacing:1px;text-transform:uppercase;font-size:9px;margin-bottom:2px;">Clique no cliente</div>
-    <div style="color:var(--fg2);">para ver detalhe por produto</div>
+  <div class="section-label">Clientes com queda &gt; 25% &nbsp;·&nbsp; Nov vs Out (mesmo período)</div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button onclick="exportQuedasCSV()" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border:1px solid var(--border);border-radius:5px;background:var(--bg2);color:var(--fg2);font-size:11px;font-weight:600;letter-spacing:.5px;cursor:pointer;text-transform:uppercase;">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Exportar CSV
+    </button>
+    <div style="font-size:11px;color:var(--fg3);text-align:right;line-height:1.5;">
+      <div style="font-weight:600;letter-spacing:1px;text-transform:uppercase;font-size:9px;margin-bottom:2px;">Clique no cliente</div>
+      <div style="color:var(--fg2);">para ver detalhe</div>
+    </div>
   </div>
 </div>
 
@@ -1489,6 +1495,24 @@ function renderCalendario() {
 renderCalendario();
 
 // ── MODAL ─────────────────────────────────────────────────────
+function exportQuedasCSV() {
+  const all = [...QUEDA_MAIN, ...QUEDA_OUTROS];
+  const header = ['Cod','Nome','Acum Nov','Tend Nov','Out/26','Nov/25','Var m/m %','Var a/a %','Próx. Compra','Intervalo (d)','Última Compra','05KG','10KG','20KG','40KG'];
+  const rows = all.map(c => [
+    c.cod, '"'+c.nome+'"', c.acum, c.tend, c.out26, c.nov25||0,
+    c.dm_m!==null?c.dm_m.toFixed(1):'', c.da_a!==null?c.da_a.toFixed(1):'',
+    c.proximo||'', c.intervalo||'', c.ultimo||'',
+    c.prod['05KG']||0, c.prod['10KG']||0, c.prod['20KG']||0, c.prod['40KG']||0
+  ]);
+  const csv = [header, ...rows].map(r => r.join(';')).join('\n');
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'queda_nov26_d'+new Date().getDate()+'.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 function openModal(c) {
   const isHoje=c.d===getHOJE();
   const metaDia=metaOrig('total');
@@ -1745,64 +1769,64 @@ document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); }
 // CLIENTES EM QUEDA
 // ══════════════════════════════════════════════════════════════
 const QUEDA_MAIN = [
-  {"cod":16675,"nome":"H2O DISTRIBUIDORA","acum":1175,"tend":1958,"nov25":2718,"out26":3014,"da_a":-28.0,"dm_m":-35.0,"q_aa":true,"q_mm":true,"ultimo":"2026-11-17","proximo":null,"prod":{"05KG":0,"10KG":116,"20KG":0,"40KG":1059}},
-  {"cod":16491,"nome":"FRANCISCO CHAGAS","acum":782,"tend":1303,"nov25":0,"out26":1820,"da_a":null,"dm_m":-28.4,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":null,"prod":{"05KG":105,"10KG":121,"20KG":82,"40KG":474}},
-  {"cod":5784,"nome":"PONTAO NASCER DO SOL","acum":407,"tend":678,"nov25":0,"out26":1210,"da_a":null,"dm_m":-44.0,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":null,"prod":{"05KG":93,"10KG":314,"20KG":0,"40KG":0}},
-  {"cod":14810,"nome":"ECO POSTO","acum":368,"tend":613,"nov25":750,"out26":854,"da_a":-18.3,"dm_m":-28.2,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":null,"prod":{"05KG":90,"10KG":120,"20KG":50,"40KG":108}},
-  {"cod":4312,"nome":"AKITEM PARQUE 10","acum":365,"tend":608,"nov25":355,"out26":816,"da_a":71.3,"dm_m":-25.5,"q_aa":false,"q_mm":true,"ultimo":"2026-11-16","proximo":null,"prod":{"05KG":45,"10KG":70,"20KG":84,"40KG":166}},
-  {"cod":13481,"nome":"AUTO POSTO RIACHAO","acum":350,"tend":583,"nov25":210,"out26":868,"da_a":177.6,"dm_m":-32.8,"q_aa":false,"q_mm":true,"ultimo":"2026-11-16","proximo":null,"prod":{"05KG":110,"10KG":110,"20KG":60,"40KG":70}},
-  {"cod":16372,"nome":"AUTO POSTO RECIFE LTDA","acum":315,"tend":525,"nov25":550,"out26":761,"da_a":-4.5,"dm_m":-31.0,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":null,"prod":{"05KG":70,"10KG":70,"20KG":25,"40KG":150}},
-  {"cod":14773,"nome":"COOPERATIVA PONTA NEGRA","acum":291,"tend":485,"nov25":550,"out26":677,"da_a":-11.8,"dm_m":-28.4,"q_aa":false,"q_mm":true,"ultimo":"2026-11-13","proximo":null,"prod":{"05KG":0,"10KG":0,"20KG":0,"40KG":291}},
-  {"cod":15398,"nome":"LUIZ ELDER BONFA","acum":250,"tend":417,"nov25":0,"out26":400,"da_a":null,"dm_m":4.2,"q_aa":false,"q_mm":false,"ultimo":"2026-11-09","proximo":null,"prod":{"05KG":0,"10KG":0,"20KG":0,"40KG":250}},
-  {"cod":14635,"nome":"POSTO 300","acum":246,"tend":410,"nov25":555,"out26":690,"da_a":-26.1,"dm_m":-40.6,"q_aa":true,"q_mm":true,"ultimo":"2026-11-18","proximo":null,"prod":{"05KG":80,"10KG":50,"20KG":40,"40KG":76}},
-  {"cod":14858,"nome":"ALL NIGHT PUB","acum":237,"tend":395,"nov25":160,"out26":865,"da_a":146.9,"dm_m":-54.3,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":null,"prod":{"05KG":0,"10KG":165,"20KG":72,"40KG":0}},
-  {"cod":15777,"nome":"POSTO SANTA ROSA","acum":230,"tend":383,"nov25":761,"out26":665,"da_a":-49.7,"dm_m":-42.4,"q_aa":true,"q_mm":true,"ultimo":"2026-11-14","proximo":null,"prod":{"05KG":40,"10KG":40,"20KG":40,"40KG":110}},
-  {"cod":15395,"nome":"AUTO POSTO FIGUEIREDO","acum":230,"tend":383,"nov25":285,"out26":653,"da_a":34.4,"dm_m":-41.3,"q_aa":false,"q_mm":true,"ultimo":"2026-11-13","proximo":null,"prod":{"05KG":80,"10KG":80,"20KG":0,"40KG":70}},
-  {"cod":3646,"nome":"MICHAEL BRENO ARAUJO GOMES","acum":210,"tend":350,"nov25":490,"out26":576,"da_a":-28.6,"dm_m":-39.2,"q_aa":true,"q_mm":true,"ultimo":"2026-11-11","proximo":null,"prod":{"05KG":40,"10KG":30,"20KG":40,"40KG":100}},
-  {"cod":10264,"nome":"EMPORIO DAS FRUTAS","acum":205,"tend":342,"nov25":560,"out26":630,"da_a":-38.9,"dm_m":-45.7,"q_aa":true,"q_mm":true,"ultimo":"2026-11-14","proximo":null,"prod":{"05KG":40,"10KG":40,"20KG":45,"40KG":80}},
-  {"cod":16592,"nome":"LATCEU","acum":200,"tend":333,"nov25":440,"out26":370,"da_a":-24.3,"dm_m":-10.0,"q_aa":true,"q_mm":false,"ultimo":"2026-11-05","proximo":null,"prod":{"05KG":0,"10KG":0,"20KG":0,"40KG":200}},
-  {"cod":15529,"nome":"PONTAO LECY II","acum":180,"tend":300,"nov25":874,"out26":700,"da_a":-65.7,"dm_m":-57.1,"q_aa":true,"q_mm":true,"ultimo":"2026-11-18","proximo":null,"prod":{"05KG":60,"10KG":120,"20KG":0,"40KG":0}},
-  {"cod":15107,"nome":"POSTO ZUMBI","acum":180,"tend":300,"nov25":347,"out26":487,"da_a":-13.5,"dm_m":-38.4,"q_aa":false,"q_mm":true,"ultimo":"2026-11-17","proximo":null,"prod":{"05KG":60,"10KG":55,"20KG":65,"40KG":0}},
-  {"cod":5287,"nome":"LAGOA CRISTALINA EMPREENDIMENTOS LTDA","acum":145,"tend":242,"nov25":0,"out26":500,"da_a":null,"dm_m":-51.6,"q_aa":false,"q_mm":true,"ultimo":"2026-11-09","proximo":null,"prod":{"05KG":20,"10KG":30,"20KG":15,"40KG":80}},
-  {"cod":14750,"nome":"POSTO SANTA ETELVINA","acum":131,"tend":218,"nov25":205,"out26":250,"da_a":6.3,"dm_m":-12.8,"q_aa":false,"q_mm":false,"ultimo":"2026-11-18","proximo":null,"prod":{"05KG":46,"10KG":34,"20KG":16,"40KG":35}},
-  {"cod":15117,"nome":"POSTO F G","acum":120,"tend":200,"nov25":255,"out26":311,"da_a":-21.6,"dm_m":-35.7,"q_aa":true,"q_mm":true,"ultimo":"2026-11-16","proximo":null,"prod":{"05KG":60,"10KG":60,"20KG":0,"40KG":0}},
-  {"cod":14948,"nome":"POSTO MAUAZINHO","acum":110,"tend":183,"nov25":252,"out26":280,"da_a":-27.4,"dm_m":-34.6,"q_aa":true,"q_mm":true,"ultimo":"2026-11-17","proximo":null,"prod":{"05KG":45,"10KG":40,"20KG":25,"40KG":0}},
-  {"cod":3986,"nome":"ILHA GELADA 7 DE MAIO","acum":105,"tend":175,"nov25":180,"out26":270,"da_a":-2.8,"dm_m":-35.2,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":null,"prod":{"05KG":60,"10KG":45,"20KG":0,"40KG":0}},
-  {"cod":4318,"nome":"ZERO UM CERVEJAS EXPRESS -BARAO VIEIRALV","acum":100,"tend":167,"nov25":135,"out26":229,"da_a":23.7,"dm_m":-27.1,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":null,"prod":{"05KG":40,"10KG":60,"20KG":0,"40KG":0}},
-  {"cod":2045,"nome":"POSTO EDUCANDOS","acum":95,"tend":158,"nov25":0,"out26":181,"da_a":null,"dm_m":-12.7,"q_aa":false,"q_mm":false,"ultimo":"2026-11-17","proximo":null,"prod":{"05KG":45,"10KG":50,"20KG":0,"40KG":0}},
-  {"cod":15752,"nome":"RB COMERCIO DE COMBUSTIVEL EIR","acum":84,"tend":140,"nov25":420,"out26":276,"da_a":-66.7,"dm_m":-49.3,"q_aa":true,"q_mm":true,"ultimo":"2026-11-17","proximo":null,"prod":{"05KG":31,"10KG":35,"20KG":18,"40KG":0}},
-  {"cod":16844,"nome":"CETUR MIX","acum":83,"tend":138,"nov25":130,"out26":217,"da_a":6.2,"dm_m":-36.4,"q_aa":false,"q_mm":true,"ultimo":"2026-11-17","proximo":null,"prod":{"05KG":40,"10KG":30,"20KG":13,"40KG":0}},
-  {"cod":16467,"nome":"DB ELEGANCE","acum":80,"tend":133,"nov25":110,"out26":210,"da_a":20.9,"dm_m":-36.7,"q_aa":false,"q_mm":true,"ultimo":"2026-11-13","proximo":null,"prod":{"05KG":80,"10KG":0,"20KG":0,"40KG":0}},
-  {"cod":14960,"nome":"POSTO UNIAO 7","acum":80,"tend":133,"nov25":232,"out26":301,"da_a":-42.7,"dm_m":-55.8,"q_aa":true,"q_mm":true,"ultimo":"2026-11-16","proximo":null,"prod":{"05KG":35,"10KG":45,"20KG":0,"40KG":0}},
-  {"cod":1668,"nome":"DEDEU FILIAL","acum":65,"tend":108,"nov25":100,"out26":170,"da_a":8.0,"dm_m":-36.5,"q_aa":false,"q_mm":true,"ultimo":"2026-11-11","proximo":null,"prod":{"05KG":25,"10KG":40,"20KG":0,"40KG":0}},
-  {"cod":5104,"nome":"JRL COM DE DER DE PETR LTDA- TIMBIRAS","acum":65,"tend":108,"nov25":0,"out26":117,"da_a":null,"dm_m":-7.7,"q_aa":false,"q_mm":false,"ultimo":"2026-11-16","proximo":null,"prod":{"05KG":20,"10KG":20,"20KG":25,"40KG":0}},
-  {"cod":16228,"nome":"RZD CONVENIENCIA","acum":61,"tend":102,"nov25":229,"out26":198,"da_a":-55.5,"dm_m":-48.5,"q_aa":true,"q_mm":true,"ultimo":"2026-11-14","proximo":null,"prod":{"05KG":25,"10KG":23,"20KG":13,"40KG":0}},
-  {"cod":16350,"nome":"FEIRA DO CEASA","acum":60,"tend":100,"nov25":205,"out26":241,"da_a":-51.2,"dm_m":-58.5,"q_aa":true,"q_mm":true,"ultimo":"2026-11-16","proximo":null,"prod":{"05KG":0,"10KG":0,"20KG":0,"40KG":60}},
-  {"cod":5134,"nome":"BALSA AMARELA - PEDRO HENRIQUE","acum":60,"tend":100,"nov25":73,"out26":146,"da_a":37.0,"dm_m":-31.5,"q_aa":false,"q_mm":true,"ultimo":"2026-11-17","proximo":null,"prod":{"05KG":30,"10KG":20,"20KG":10,"40KG":0}},
-  {"cod":5790,"nome":"RODRIGO DE SOUZA GONCALVES","acum":57,"tend":95,"nov25":0,"out26":135,"da_a":null,"dm_m":-29.6,"q_aa":false,"q_mm":true,"ultimo":"2026-11-13","proximo":null,"prod":{"05KG":0,"10KG":6,"20KG":0,"40KG":51}},
-  {"cod":1852,"nome":"SUPERMERCADOS EMPORIO DB PONTA NEGRA","acum":55,"tend":92,"nov25":120,"out26":225,"da_a":-23.3,"dm_m":-59.1,"q_aa":true,"q_mm":true,"ultimo":"2026-11-10","proximo":null,"prod":{"05KG":30,"10KG":25,"20KG":0,"40KG":0}},
-  {"cod":15126,"nome":"POSTO VIEIRALVES","acum":50,"tend":83,"nov25":110,"out26":210,"da_a":-24.5,"dm_m":-60.5,"q_aa":true,"q_mm":true,"ultimo":"2026-11-14","proximo":null,"prod":{"05KG":50,"10KG":0,"20KG":0,"40KG":0}},
-  {"cod":2129,"nome":"POSTO FIGUEIREDO COMER DERIV DE PET LTDA","acum":50,"tend":83,"nov25":87,"out26":115,"da_a":-4.6,"dm_m":-27.8,"q_aa":false,"q_mm":true,"ultimo":"2026-11-04","proximo":null,"prod":{"05KG":25,"10KG":25,"20KG":0,"40KG":0}}
+  {"cod":16675,"nome":"H2O DISTRIBUIDORA","acum":1175,"tend":1958,"nov25":2718,"out26":3014,"da_a":-28.0,"dm_m":-35.0,"q_aa":true,"q_mm":true,"ultimo":"2026-11-17","proximo":"2026-11-22","intervalo":5,"prod":{"05KG":0,"10KG":116,"20KG":0,"40KG":1059}},
+  {"cod":16491,"nome":"FRANCISCO CHAGAS","acum":782,"tend":1303,"nov25":0,"out26":1820,"da_a":null,"dm_m":-28.4,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":"2026-11-21","intervalo":3,"prod":{"05KG":105,"10KG":121,"20KG":82,"40KG":474}},
+  {"cod":5784,"nome":"PONTAO NASCER DO SOL","acum":407,"tend":678,"nov25":0,"out26":1210,"da_a":null,"dm_m":-44.0,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":"2026-11-18","intervalo":2,"prod":{"05KG":93,"10KG":314,"20KG":0,"40KG":0}},
+  {"cod":14810,"nome":"ECO POSTO","acum":368,"tend":613,"nov25":750,"out26":854,"da_a":-18.3,"dm_m":-28.2,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":"2026-11-19","intervalo":3,"prod":{"05KG":90,"10KG":120,"20KG":50,"40KG":108}},
+  {"cod":4312,"nome":"AKITEM PARQUE 10","acum":365,"tend":608,"nov25":355,"out26":816,"da_a":71.3,"dm_m":-25.5,"q_aa":false,"q_mm":true,"ultimo":"2026-11-16","proximo":"2026-11-20","intervalo":4,"prod":{"05KG":45,"10KG":70,"20KG":84,"40KG":166}},
+  {"cod":13481,"nome":"AUTO POSTO RIACHAO","acum":350,"tend":583,"nov25":210,"out26":868,"da_a":177.6,"dm_m":-32.8,"q_aa":false,"q_mm":true,"ultimo":"2026-11-16","proximo":"2026-11-18","intervalo":5,"prod":{"05KG":110,"10KG":110,"20KG":60,"40KG":70}},
+  {"cod":16372,"nome":"AUTO POSTO RECIFE LTDA","acum":315,"tend":525,"nov25":550,"out26":761,"da_a":-4.5,"dm_m":-31.0,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":"2026-11-21","intervalo":5,"prod":{"05KG":70,"10KG":70,"20KG":25,"40KG":150}},
+  {"cod":14773,"nome":"COOPERATIVA PONTA NEGRA","acum":291,"tend":485,"nov25":550,"out26":677,"da_a":-11.8,"dm_m":-28.4,"q_aa":false,"q_mm":true,"ultimo":"2026-11-13","proximo":"2026-11-18","intervalo":5,"prod":{"05KG":0,"10KG":0,"20KG":0,"40KG":291}},
+  {"cod":15398,"nome":"LUIZ ELDER BONFA","acum":250,"tend":417,"nov25":0,"out26":400,"da_a":null,"dm_m":4.2,"q_aa":false,"q_mm":false,"ultimo":"2026-11-09","proximo":"2026-12-03","intervalo":24,"prod":{"05KG":0,"10KG":0,"20KG":0,"40KG":250}},
+  {"cod":14635,"nome":"POSTO 300","acum":246,"tend":410,"nov25":555,"out26":690,"da_a":-26.1,"dm_m":-40.6,"q_aa":true,"q_mm":true,"ultimo":"2026-11-18","proximo":"2026-11-22","intervalo":6,"prod":{"05KG":80,"10KG":50,"20KG":40,"40KG":76}},
+  {"cod":14858,"nome":"ALL NIGHT PUB","acum":237,"tend":395,"nov25":160,"out26":865,"da_a":146.9,"dm_m":-54.3,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":"2026-11-21","intervalo":3,"prod":{"05KG":0,"10KG":165,"20KG":72,"40KG":0}},
+  {"cod":15777,"nome":"POSTO SANTA ROSA","acum":230,"tend":383,"nov25":761,"out26":665,"da_a":-49.7,"dm_m":-42.4,"q_aa":true,"q_mm":true,"ultimo":"2026-11-14","proximo":"2026-11-16","intervalo":4,"prod":{"05KG":40,"10KG":40,"20KG":40,"40KG":110}},
+  {"cod":15395,"nome":"AUTO POSTO FIGUEIREDO","acum":230,"tend":383,"nov25":285,"out26":653,"da_a":34.4,"dm_m":-41.3,"q_aa":false,"q_mm":true,"ultimo":"2026-11-13","proximo":"2026-11-18","intervalo":7,"prod":{"05KG":80,"10KG":80,"20KG":0,"40KG":70}},
+  {"cod":3646,"nome":"MICHAEL BRENO ARAUJO GOMES","acum":210,"tend":350,"nov25":490,"out26":576,"da_a":-28.6,"dm_m":-39.2,"q_aa":true,"q_mm":true,"ultimo":"2026-11-11","proximo":"2026-11-16","intervalo":5,"prod":{"05KG":40,"10KG":30,"20KG":40,"40KG":100}},
+  {"cod":10264,"nome":"EMPORIO DAS FRUTAS","acum":205,"tend":342,"nov25":560,"out26":630,"da_a":-38.9,"dm_m":-45.7,"q_aa":true,"q_mm":true,"ultimo":"2026-11-14","proximo":"2026-11-19","intervalo":7,"prod":{"05KG":40,"10KG":40,"20KG":45,"40KG":80}},
+  {"cod":16592,"nome":"LATCEU","acum":200,"tend":333,"nov25":440,"out26":370,"da_a":-24.3,"dm_m":-10.0,"q_aa":true,"q_mm":false,"ultimo":"2026-11-05","proximo":"2026-11-23","intervalo":18,"prod":{"05KG":0,"10KG":0,"20KG":0,"40KG":200}},
+  {"cod":15529,"nome":"PONTAO LECY II","acum":180,"tend":300,"nov25":874,"out26":700,"da_a":-65.7,"dm_m":-57.1,"q_aa":true,"q_mm":true,"ultimo":"2026-11-18","proximo":"2026-11-17","intervalo":4,"prod":{"05KG":60,"10KG":120,"20KG":0,"40KG":0}},
+  {"cod":15107,"nome":"POSTO ZUMBI","acum":180,"tend":300,"nov25":347,"out26":487,"da_a":-13.5,"dm_m":-38.4,"q_aa":false,"q_mm":true,"ultimo":"2026-11-17","proximo":"2026-11-21","intervalo":4,"prod":{"05KG":60,"10KG":55,"20KG":65,"40KG":0}},
+  {"cod":5287,"nome":"LAGOA CRISTALINA EMPREENDIMENTOS LTDA","acum":145,"tend":242,"nov25":0,"out26":500,"da_a":null,"dm_m":-51.6,"q_aa":false,"q_mm":true,"ultimo":"2026-11-09","proximo":"2026-11-11","intervalo":7,"prod":{"05KG":20,"10KG":30,"20KG":15,"40KG":80}},
+  {"cod":14750,"nome":"POSTO SANTA ETELVINA","acum":131,"tend":218,"nov25":205,"out26":250,"da_a":6.3,"dm_m":-12.8,"q_aa":false,"q_mm":false,"ultimo":"2026-11-18","proximo":"2026-11-27","intervalo":9,"prod":{"05KG":46,"10KG":34,"20KG":16,"40KG":35}},
+  {"cod":15117,"nome":"POSTO F G","acum":120,"tend":200,"nov25":255,"out26":311,"da_a":-21.6,"dm_m":-35.7,"q_aa":true,"q_mm":true,"ultimo":"2026-11-16","proximo":"2026-11-23","intervalo":7,"prod":{"05KG":60,"10KG":60,"20KG":0,"40KG":0}},
+  {"cod":14948,"nome":"POSTO MAUAZINHO","acum":110,"tend":183,"nov25":252,"out26":280,"da_a":-27.4,"dm_m":-34.6,"q_aa":true,"q_mm":true,"ultimo":"2026-11-17","proximo":"2026-11-20","intervalo":4,"prod":{"05KG":45,"10KG":40,"20KG":25,"40KG":0}},
+  {"cod":3986,"nome":"ILHA GELADA 7 DE MAIO","acum":105,"tend":175,"nov25":180,"out26":270,"da_a":-2.8,"dm_m":-35.2,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":"2026-11-24","intervalo":6,"prod":{"05KG":60,"10KG":45,"20KG":0,"40KG":0}},
+  {"cod":4318,"nome":"ZERO UM CERVEJAS EXPRESS -BARAO VIEIRALV","acum":100,"tend":167,"nov25":135,"out26":229,"da_a":23.7,"dm_m":-27.1,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":"2026-11-25","intervalo":7,"prod":{"05KG":40,"10KG":60,"20KG":0,"40KG":0}},
+  {"cod":2045,"nome":"POSTO EDUCANDOS","acum":95,"tend":158,"nov25":0,"out26":181,"da_a":null,"dm_m":-12.7,"q_aa":false,"q_mm":false,"ultimo":"2026-11-17","proximo":"2026-11-22","intervalo":6,"prod":{"05KG":45,"10KG":50,"20KG":0,"40KG":0}},
+  {"cod":15752,"nome":"RB COMERCIO DE COMBUSTIVEL EIR","acum":84,"tend":140,"nov25":420,"out26":276,"da_a":-66.7,"dm_m":-49.3,"q_aa":true,"q_mm":true,"ultimo":"2026-11-17","proximo":"2026-11-14","intervalo":5,"prod":{"05KG":31,"10KG":35,"20KG":18,"40KG":0}},
+  {"cod":16844,"nome":"CETUR MIX","acum":83,"tend":138,"nov25":130,"out26":217,"da_a":6.2,"dm_m":-36.4,"q_aa":false,"q_mm":true,"ultimo":"2026-11-17","proximo":"2026-11-23","intervalo":6,"prod":{"05KG":40,"10KG":30,"20KG":13,"40KG":0}},
+  {"cod":16467,"nome":"DB ELEGANCE","acum":80,"tend":133,"nov25":110,"out26":210,"da_a":20.9,"dm_m":-36.7,"q_aa":false,"q_mm":true,"ultimo":"2026-11-13","proximo":"2026-11-23","intervalo":12,"prod":{"05KG":80,"10KG":0,"20KG":0,"40KG":0}},
+  {"cod":14960,"nome":"POSTO UNIAO 7","acum":80,"tend":133,"nov25":232,"out26":301,"da_a":-42.7,"dm_m":-55.8,"q_aa":true,"q_mm":true,"ultimo":"2026-11-16","proximo":"2026-11-22","intervalo":6,"prod":{"05KG":35,"10KG":45,"20KG":0,"40KG":0}},
+  {"cod":1668,"nome":"DEDEU FILIAL","acum":65,"tend":108,"nov25":100,"out26":170,"da_a":8.0,"dm_m":-36.5,"q_aa":false,"q_mm":true,"ultimo":"2026-11-11","proximo":"2026-11-18","intervalo":7,"prod":{"05KG":25,"10KG":40,"20KG":0,"40KG":0}},
+  {"cod":5104,"nome":"JRL COM DE DER DE PETR LTDA- TIMBIRAS","acum":65,"tend":108,"nov25":0,"out26":117,"da_a":null,"dm_m":-7.7,"q_aa":false,"q_mm":false,"ultimo":"2026-11-16","proximo":"2026-11-25","intervalo":9,"prod":{"05KG":20,"10KG":20,"20KG":25,"40KG":0}},
+  {"cod":16228,"nome":"RZD CONVENIENCIA","acum":61,"tend":102,"nov25":229,"out26":198,"da_a":-55.5,"dm_m":-48.5,"q_aa":true,"q_mm":true,"ultimo":"2026-11-14","proximo":"2026-11-19","intervalo":7,"prod":{"05KG":25,"10KG":23,"20KG":13,"40KG":0}},
+  {"cod":16350,"nome":"FEIRA DO CEASA","acum":60,"tend":100,"nov25":205,"out26":241,"da_a":-51.2,"dm_m":-58.5,"q_aa":true,"q_mm":true,"ultimo":"2026-11-16","proximo":"2026-11-21","intervalo":5,"prod":{"05KG":0,"10KG":0,"20KG":0,"40KG":60}},
+  {"cod":5134,"nome":"BALSA AMARELA - PEDRO HENRIQUE","acum":60,"tend":100,"nov25":73,"out26":146,"da_a":37.0,"dm_m":-31.5,"q_aa":false,"q_mm":true,"ultimo":"2026-11-17","proximo":"2026-11-25","intervalo":8,"prod":{"05KG":30,"10KG":20,"20KG":10,"40KG":0}},
+  {"cod":5790,"nome":"RODRIGO DE SOUZA GONCALVES","acum":57,"tend":95,"nov25":0,"out26":135,"da_a":null,"dm_m":-29.6,"q_aa":false,"q_mm":true,"ultimo":"2026-11-13","proximo":"2026-11-18","intervalo":5,"prod":{"05KG":0,"10KG":6,"20KG":0,"40KG":51}},
+  {"cod":1852,"nome":"SUPERMERCADOS EMPORIO DB PONTA NEGRA","acum":55,"tend":92,"nov25":120,"out26":225,"da_a":-23.3,"dm_m":-59.1,"q_aa":true,"q_mm":true,"ultimo":"2026-11-10","proximo":"2026-11-17","intervalo":7,"prod":{"05KG":30,"10KG":25,"20KG":0,"40KG":0}},
+  {"cod":15126,"nome":"POSTO VIEIRALVES","acum":50,"tend":83,"nov25":110,"out26":210,"da_a":-24.5,"dm_m":-60.5,"q_aa":true,"q_mm":true,"ultimo":"2026-11-14","proximo":"2026-11-20","intervalo":8,"prod":{"05KG":50,"10KG":0,"20KG":0,"40KG":0}},
+  {"cod":2129,"nome":"POSTO FIGUEIREDO COMER DERIV DE PET LTDA","acum":50,"tend":83,"nov25":87,"out26":115,"da_a":-4.6,"dm_m":-27.8,"q_aa":false,"q_mm":true,"ultimo":"2026-11-04","proximo":"2026-11-14","intervalo":10,"prod":{"05KG":25,"10KG":25,"20KG":0,"40KG":0}}
 ];
 
 const QUEDA_OUTROS = [
-  {"cod":16258,"nome":"CONVENIENCIA LIMOEIRO","acum":49,"tend":82,"nov25":141,"out26":152,"da_a":-41.8,"dm_m":-46.1,"q_aa":true,"q_mm":true,"ultimo":"2026-11-17","proximo":null,"prod":{"05KG":25,"10KG":24,"20KG":0,"40KG":0}},
-  {"cod":14811,"nome":"POSTO 3002 SOLIMOES","acum":45,"tend":75,"nov25":100,"out26":140,"da_a":-25.0,"dm_m":-46.4,"q_aa":true,"q_mm":true,"ultimo":"2026-11-10","proximo":null,"prod":{"05KG":45,"10KG":0,"20KG":0,"40KG":0}},
-  {"cod":16280,"nome":"SALOME BAR","acum":39,"tend":65,"nov25":50,"out26":94,"da_a":30.0,"dm_m":-30.9,"q_aa":false,"q_mm":true,"ultimo":"2026-11-16","proximo":null,"prod":{"05KG":0,"10KG":24,"20KG":15,"40KG":0}},
-  {"cod":1746,"nome":"PETROCASACORDEIRO COMERCIO","acum":37,"tend":62,"nov25":112,"out26":117,"da_a":-44.6,"dm_m":-47.0,"q_aa":true,"q_mm":true,"ultimo":"2026-11-07","proximo":null,"prod":{"05KG":0,"10KG":37,"20KG":0,"40KG":0}},
-  {"cod":1986,"nome":"MARCA COMERCIO DE PRODUTOS ALIMENTICIOS","acum":35,"tend":58,"nov25":0,"out26":85,"da_a":null,"dm_m":-31.8,"q_aa":false,"q_mm":true,"ultimo":"2026-11-05","proximo":null,"prod":{"05KG":0,"10KG":0,"20KG":10,"40KG":25}},
-  {"cod":5364,"nome":"SHEKINAH COMERCIO DE ALIMENTOS","acum":35,"tend":58,"nov25":0,"out26":90,"da_a":null,"dm_m":-35.6,"q_aa":false,"q_mm":true,"ultimo":"2026-11-10","proximo":null,"prod":{"05KG":15,"10KG":20,"20KG":0,"40KG":0}},
-  {"cod":2183,"nome":"MIZURA BAR","acum":31,"tend":52,"nov25":0,"out26":42,"da_a":null,"dm_m":23.8,"q_aa":false,"q_mm":false,"ultimo":"2026-11-18","proximo":null,"prod":{"05KG":0,"10KG":31,"20KG":0,"40KG":0}},
-  {"cod":15093,"nome":"POSTO TEXACO","acum":30,"tend":50,"nov25":62,"out26":79,"da_a":-19.4,"dm_m":-36.7,"q_aa":false,"q_mm":true,"ultimo":"2026-11-17","proximo":null,"prod":{"05KG":15,"10KG":15,"20KG":0,"40KG":0}},
-  {"cod":14976,"nome":"PETROMAY DERIV.DE PE","acum":30,"tend":50,"nov25":64,"out26":92,"da_a":-21.9,"dm_m":-45.7,"q_aa":true,"q_mm":true,"ultimo":"2026-11-18","proximo":null,"prod":{"05KG":15,"10KG":15,"20KG":0,"40KG":0}},
-  {"cod":5272,"nome":"25 HORAS","acum":30,"tend":50,"nov25":0,"out26":95,"da_a":null,"dm_m":-47.4,"q_aa":false,"q_mm":true,"ultimo":"2026-11-13","proximo":null,"prod":{"05KG":0,"10KG":10,"20KG":0,"40KG":20}},
-  {"cod":16681,"nome":"POSTO SAN REMO","acum":25,"tend":42,"nov25":39,"out26":60,"da_a":7.7,"dm_m":-30.0,"q_aa":false,"q_mm":true,"ultimo":"2026-11-17","proximo":null,"prod":{"05KG":10,"10KG":10,"20KG":5,"40KG":0}},
-  {"cod":5230,"nome":"SUPERMERCADOS JUMA PETROPOLIS","acum":25,"tend":42,"nov25":0,"out26":71,"da_a":null,"dm_m":-40.8,"q_aa":false,"q_mm":true,"ultimo":"2026-11-09","proximo":null,"prod":{"05KG":25,"10KG":0,"20KG":0,"40KG":0}},
-  {"cod":16814,"nome":"DISTRIBUIDORA DE CARNES JK","acum":25,"tend":42,"nov25":41,"out26":40,"da_a":2.4,"dm_m":5.0,"q_aa":false,"q_mm":false,"ultimo":"2026-11-03","proximo":null,"prod":{"05KG":25,"10KG":0,"20KG":0,"40KG":0}},
-  {"cod":16282,"nome":"TERRACO UN","acum":24,"tend":40,"nov25":0,"out26":60,"da_a":null,"dm_m":-33.3,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":null,"prod":{"05KG":0,"10KG":22,"20KG":0,"40KG":2}},
-  {"cod":1897,"nome":"PONTO FAST LTDA","acum":22,"tend":37,"nov25":132,"out26":80,"da_a":-72.0,"dm_m":-53.8,"q_aa":true,"q_mm":true,"ultimo":"2026-11-16","proximo":null,"prod":{"05KG":0,"10KG":22,"20KG":0,"40KG":0}},
-  {"cod":2582,"nome":"SUPERMERCADOS JUMA PARQUE GARCA LTDA","acum":20,"tend":33,"nov25":0,"out26":60,"da_a":null,"dm_m":-45.0,"q_aa":false,"q_mm":true,"ultimo":"2026-11-03","proximo":null,"prod":{"05KG":20,"10KG":0,"20KG":0,"40KG":0}},
-  {"cod":4575,"nome":"FRISACRE","acum":20,"tend":33,"nov25":20,"out26":30,"da_a":65.0,"dm_m":10.0,"q_aa":false,"q_mm":false,"ultimo":"2026-11-16","proximo":null,"prod":{"05KG":10,"10KG":10,"20KG":0,"40KG":0}}
+  {"cod":16258,"nome":"CONVENIENCIA LIMOEIRO","acum":49,"tend":82,"nov25":141,"out26":152,"da_a":-41.8,"dm_m":-46.1,"q_aa":true,"q_mm":true,"ultimo":"2026-11-17","proximo":"2026-11-20","intervalo":4,"prod":{"05KG":25,"10KG":24,"20KG":0,"40KG":0}},
+  {"cod":14811,"nome":"POSTO 3002 SOLIMOES","acum":45,"tend":75,"nov25":100,"out26":140,"da_a":-25.0,"dm_m":-46.4,"q_aa":true,"q_mm":true,"ultimo":"2026-11-10","proximo":"2026-11-16","intervalo":6,"prod":{"05KG":45,"10KG":0,"20KG":0,"40KG":0}},
+  {"cod":16280,"nome":"SALOME BAR","acum":39,"tend":65,"nov25":50,"out26":94,"da_a":30.0,"dm_m":-30.9,"q_aa":false,"q_mm":true,"ultimo":"2026-11-16","proximo":"2026-11-20","intervalo":4,"prod":{"05KG":0,"10KG":24,"20KG":15,"40KG":0}},
+  {"cod":1746,"nome":"PETROCASACORDEIRO COMERCIO","acum":37,"tend":62,"nov25":112,"out26":117,"da_a":-44.6,"dm_m":-47.0,"q_aa":true,"q_mm":true,"ultimo":"2026-11-07","proximo":"2026-11-13","intervalo":8,"prod":{"05KG":0,"10KG":37,"20KG":0,"40KG":0}},
+  {"cod":1986,"nome":"MARCA COMERCIO DE PRODUTOS ALIMENTICIOS","acum":35,"tend":58,"nov25":0,"out26":85,"da_a":null,"dm_m":-31.8,"q_aa":false,"q_mm":true,"ultimo":"2026-11-05","proximo":"2026-11-15","intervalo":12,"prod":{"05KG":0,"10KG":0,"20KG":10,"40KG":25}},
+  {"cod":5364,"nome":"SHEKINAH COMERCIO DE ALIMENTOS","acum":35,"tend":58,"nov25":0,"out26":90,"da_a":null,"dm_m":-35.6,"q_aa":false,"q_mm":true,"ultimo":"2026-11-10","proximo":"2026-11-21","intervalo":11,"prod":{"05KG":15,"10KG":20,"20KG":0,"40KG":0}},
+  {"cod":2183,"nome":"MIZURA BAR","acum":31,"tend":52,"nov25":0,"out26":42,"da_a":null,"dm_m":23.8,"q_aa":false,"q_mm":false,"ultimo":"2026-11-18","proximo":"2026-11-25","intervalo":7,"prod":{"05KG":0,"10KG":31,"20KG":0,"40KG":0}},
+  {"cod":15093,"nome":"POSTO TEXACO","acum":30,"tend":50,"nov25":62,"out26":79,"da_a":-19.4,"dm_m":-36.7,"q_aa":false,"q_mm":true,"ultimo":"2026-11-17","proximo":"2026-11-23","intervalo":6,"prod":{"05KG":15,"10KG":15,"20KG":0,"40KG":0}},
+  {"cod":14976,"nome":"PETROMAY DERIV.DE PE","acum":30,"tend":50,"nov25":64,"out26":92,"da_a":-21.9,"dm_m":-45.7,"q_aa":true,"q_mm":true,"ultimo":"2026-11-18","proximo":"2026-11-24","intervalo":8,"prod":{"05KG":15,"10KG":15,"20KG":0,"40KG":0}},
+  {"cod":5272,"nome":"25 HORAS","acum":30,"tend":50,"nov25":0,"out26":95,"da_a":null,"dm_m":-47.4,"q_aa":false,"q_mm":true,"ultimo":"2026-11-13","proximo":"2026-11-22","intervalo":11,"prod":{"05KG":0,"10KG":10,"20KG":0,"40KG":20}},
+  {"cod":16681,"nome":"POSTO SAN REMO","acum":25,"tend":42,"nov25":39,"out26":60,"da_a":7.7,"dm_m":-30.0,"q_aa":false,"q_mm":true,"ultimo":"2026-11-17","proximo":"2026-12-12","intervalo":25,"prod":{"05KG":10,"10KG":10,"20KG":5,"40KG":0}},
+  {"cod":5230,"nome":"SUPERMERCADOS JUMA PETROPOLIS","acum":25,"tend":42,"nov25":0,"out26":71,"da_a":null,"dm_m":-40.8,"q_aa":false,"q_mm":true,"ultimo":"2026-11-09","proximo":"2026-11-18","intervalo":9,"prod":{"05KG":25,"10KG":0,"20KG":0,"40KG":0}},
+  {"cod":16814,"nome":"DISTRIBUIDORA DE CARNES JK","acum":25,"tend":42,"nov25":41,"out26":40,"da_a":2.4,"dm_m":5.0,"q_aa":false,"q_mm":false,"ultimo":"2026-11-03","proximo":"2026-11-16","intervalo":13,"prod":{"05KG":25,"10KG":0,"20KG":0,"40KG":0}},
+  {"cod":16282,"nome":"TERRACO UN","acum":24,"tend":40,"nov25":0,"out26":60,"da_a":null,"dm_m":-33.3,"q_aa":false,"q_mm":true,"ultimo":"2026-11-18","proximo":"2026-12-02","intervalo":14,"prod":{"05KG":0,"10KG":22,"20KG":0,"40KG":2}},
+  {"cod":1897,"nome":"PONTO FAST LTDA","acum":22,"tend":37,"nov25":132,"out26":80,"da_a":-72.0,"dm_m":-53.8,"q_aa":true,"q_mm":true,"ultimo":"2026-11-16","proximo":"2026-11-22","intervalo":6,"prod":{"05KG":0,"10KG":22,"20KG":0,"40KG":0}},
+  {"cod":2582,"nome":"SUPERMERCADOS JUMA PARQUE GARCA LTDA","acum":20,"tend":33,"nov25":0,"out26":60,"da_a":null,"dm_m":-45.0,"q_aa":false,"q_mm":true,"ultimo":"2026-11-03","proximo":"2026-11-13","intervalo":10,"prod":{"05KG":20,"10KG":0,"20KG":0,"40KG":0}},
+  {"cod":4575,"nome":"FRISACRE","acum":20,"tend":33,"nov25":20,"out26":30,"da_a":65.0,"dm_m":10.0,"q_aa":false,"q_mm":false,"ultimo":"2026-11-16","proximo":"2026-12-14","intervalo":28,"prod":{"05KG":10,"10KG":10,"20KG":0,"40KG":0}}
 ];;
 
 // ── helpers queda ────────────────────────────────────────────────
@@ -1831,7 +1855,7 @@ const qSev = c => {
   const piorMM=allQ.filter(c=>c.dm_m!==null).sort((a,b)=>a.dm_m-b.dm_m)[0];
   let volRisco=0;
   QUEDA_MAIN.forEach(c=>{const ref=Math.max(c.nov25||0,c.out26||0);if(ref>0)volRisco+=Math.max(0,ref-c.tend);});
-  const proxHoje=allQ.filter(c=>c.proximo==='2026-11-10');
+  const hoje=new Date(); const hStr=hoje.getFullYear()+'-'+(hoje.getMonth()+1<10?'0':'')+(hoje.getMonth()+1)+'-'+(hoje.getDate()<10?'0':'')+hoje.getDate(); const proxHoje=allQ.filter(c=>c.proximo&&c.proximo<=hStr);
   document.getElementById('kpi-queda').innerHTML=[
     {lbl:'Clientes em Queda',val:String(allQ.length),cls:'c-danger',hi:true,det:'dos 253 ativos em Nov/26'},
     {lbl:'Maior Queda a/a',val:piorAA?(piorAA.da_a>=0?'+':'')+piorAA.da_a.toFixed(0)+'%':'—',cls:'c-danger',hi:true,det:piorAA?piorAA.nome.split(' ').slice(0,2).join(' '):'—'},
@@ -1905,26 +1929,42 @@ function openQueadaModal(idx) {
 
   // CEV panel for modal
   const cevData = CEV_DATA[c.cod] || {};
-  const cevItems = cevData.cev || [];
-  const giroItems = cevData.giro || [];
+  const cevItemsRaw = (cevData.cev || []).filter(e => e.eq && e.eq !== 'None' && e.sit !== 'None' && e.sit === 'ATIVO');
+  // Agrupa por nome do equipamento
+  const cevMap = {};
+  cevItemsRaw.forEach(e => { if(!cevMap[e.eq]) cevMap[e.eq]={qtd:0,cap:0}; cevMap[e.eq].qtd+=e.qtd||1; cevMap[e.eq].cap+=e.cap||0; });
+  const cevEntries = Object.entries(cevMap);
+  const capTotal = cevEntries.reduce((s,[,v])=>s+v.cap,0);
+  // Produtos do cliente (mix)
+  const mixProds = Object.entries(c.prod||{}).filter(([,v])=>v>0).map(([k,v])=>k.replace('KG',' kg')+': '+v+' un').join(' · ');
   let cevHtml = '<div class="m-sec-lbl" style="margin-top:16px;">Equipamentos em Comodato (CEV)</div>'
     + '<div class="qm-hist" style="flex-wrap:wrap;">';
-  if (cevItems.length > 0) {
-    cevItems.forEach(eq => {
-      cevHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">'+eq.eq+'</div>'
-        +'<div class="qm-h-val" style="font-size:12px;">'+eq.qtd+'× · '+eq.sit+(eq.cap?(' · '+eq.cap+' kg'):'')+'</div></div>';
+  if (cevEntries.length > 0) {
+    cevEntries.forEach(([nome, info]) => {
+      const shortNome = nome.replace(/^(CAMARA|CONSERVADOR|MINI CAMARA)\s*/,'').replace(' ZERO GRAU','').replace(' REFRIMATE','').trim();
+      cevHtml += '<div class="qm-hist-card"><div class="qm-h-lbl" style="font-size:10px;">'+shortNome+'</div>'
+        +'<div class="qm-h-val" style="font-size:12px;">'+info.qtd+'× · '+(info.cap>0?info.cap+' kg':'—')+'</div></div>';
     });
-    if (giroItems.length > 0) {
-      cevHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">Giro médio (últ. mês)</div>'
-        +'<div class="qm-h-val">'+(giroItems[0].giro||'—')+' dias</div></div>';
-      cevHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">Cap. Total (kg)</div>'
-        +'<div class="qm-h-val">'+giroItems.reduce((s,g)=>s+(g.cap||0),0)+'</div></div>';
-    }
+    cevHtml += '<div class="qm-hist-card" style="background:rgba(0,100,200,.06);"><div class="qm-h-lbl">Cap. Total</div><div class="qm-h-val c-blue">'+capTotal+' kg</div></div>';
+    if (mixProds) cevHtml += '<div class="qm-hist-card" style="min-width:200px;"><div class="qm-h-lbl">Mix Nov/26</div><div class="qm-h-val" style="font-size:11px;">'+mixProds+'</div></div>';
   } else {
     cevHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">Equipamentos</div>'
-      +'<div class="qm-h-val c-na">Sem CEV cadastrado</div></div>';
+      +'<div class="qm-h-val c-na">Sem CEV ativo</div></div>';
+    if (mixProds) cevHtml += '<div class="qm-hist-card" style="min-width:200px;"><div class="qm-h-lbl">Mix Nov/26</div><div class="qm-h-val" style="font-size:11px;">'+mixProds+'</div></div>';
   }
   cevHtml += '</div>';
+  // Previsão de compra
+  const hoje = new Date(); const hStr = hoje.getFullYear()+'-'+(hoje.getMonth()+1<10?'0':'')+(hoje.getMonth()+1)+'-'+(hoje.getDate()<10?'0':'')+hoje.getDate();
+  const prevHtml = c.proximo ? (function(){
+    const atrasado = c.proximo < hStr, hoje_ = c.proximo === hStr;
+    const cls = atrasado?'c-danger':hoje_?'c-warn':'c-ok';
+    const label = atrasado?'⚠ Atrasado '+Math.round((new Date(hStr)-new Date(c.proximo))/(86400000))+' dias':hoje_?'🟡 Esperado hoje':'';
+    return '<div class="m-sec-lbl" style="margin-top:12px;">Previsão de Compra</div>'
+      +'<div class="qm-hist">'
+      +'<div class="qm-hist-card"><div class="qm-h-lbl">Próx. Estimada</div><div class="qm-h-val '+cls+'">'+c.proximo.slice(8)+'/'+c.proximo.slice(5,7)+(label?' <span style="font-size:10px;">'+label+'</span>':'')+'</div></div>'
+      +'<div class="qm-hist-card"><div class="qm-h-lbl">Intervalo Médio</div><div class="qm-h-val">a cada '+c.intervalo+'d</div></div>'
+      +'</div>';
+  })() : '';
   // Motivo
   const motObj = MOTIVOS[c.cod];
   let motHtml = '';
@@ -1949,7 +1989,7 @@ function openQueadaModal(idx) {
       +'</div>'
       +'<button class="modal-close" onclick="closeModal()">×</button>'
     +'</div>'
-    +'<div class="modal-body">'+kpisHtml+cevHtml+prodsHtml+histHtml+motHtml+'</div>';
+    +'<div class="modal-body">'+kpisHtml+prevHtml+cevHtml+prodsHtml+histHtml+motHtml+'</div>';
   document.getElementById('modal-ov').classList.add('open');
   document.body.style.overflow='hidden';
 }
