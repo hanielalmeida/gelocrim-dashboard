@@ -381,6 +381,9 @@ footer span { font-size:11px; color:var(--fg3); }
 #tab-queda table      { min-width:960px; }
 /* Sticky thead dentro do scroll container */
 #tab-queda thead th { position:sticky; top:0; z-index:10; user-select:none; }
+.qf-btn { padding:5px 12px;border:1px solid var(--border);border-radius:20px;background:var(--bg2);color:var(--fg2);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s; }
+.qf-btn:hover { border-color:var(--green-mid);color:var(--green-mid); }
+.qf-btn.qf-active { background:var(--header);color:#fff;border-color:var(--header); }
 #tab-queda thead th:hover { opacity:.85; }
 .sort-arrow { font-size:10px; opacity:.5; }
 .sort-arrow.asc::after { content:'▲'; }
@@ -600,16 +603,20 @@ footer span { font-size:11px; color:var(--fg3); }
 
 <div class="section-head">
   <div class="section-label">Clientes com queda &gt; 15% &nbsp;·&nbsp; Nov vs Out (mesmo período)</div>
-  <div style="display:flex;align-items:center;gap:10px;">
+  <div style="display:flex;align-items:center;gap:8px;">
     <button onclick="exportQuedasCSV()" style="display:flex;align-items:center;gap:5px;padding:6px 12px;border:1px solid var(--border);border-radius:5px;background:var(--bg2);color:var(--fg2);font-size:11px;font-weight:600;letter-spacing:.5px;cursor:pointer;text-transform:uppercase;">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Exportar CSV
     </button>
-    <div style="font-size:11px;color:var(--fg3);text-align:right;line-height:1.5;">
-      <div style="font-weight:600;letter-spacing:1px;text-transform:uppercase;font-size:9px;margin-bottom:2px;">Clique no cliente</div>
-      <div style="color:var(--fg2);">para ver detalhe</div>
-    </div>
   </div>
+</div>
+<div style="padding:0 max(24px,env(safe-area-inset-left,0px)) 10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+  <span style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg3);margin-right:4px;">Filtro:</span>
+  <button id="qf-all"  onclick="filtroQueda('all')"  class="qf-btn qf-active">Todos</button>
+  <button id="qf-aa"   onclick="filtroQueda('aa')"   class="qf-btn">▼ Queda a/a</button>
+  <button id="qf-mm"   onclick="filtroQueda('mm')"   class="qf-btn">▼ Queda m/m</button>
+  <button id="qf-both" onclick="filtroQueda('both')" class="qf-btn">▼ Ambos</button>
+  <span id="qf-count" style="font-size:11px;color:var(--fg3);margin-left:4px;"></span>
 </div>
 
 <div class="tbl-outer">
@@ -1566,35 +1573,43 @@ function renderCEVHtml(cod, mixProd) {
 
 
 // ── MODAL ─────────────────────────────────────────────────────
-let _qSortCol = 'dm_m', _qSortAsc = true;
-function sortQueda(col) {
-  if (_qSortCol === col) { _qSortAsc = !_qSortAsc; }
-  else { _qSortCol = col; _qSortAsc = col === 'nome'; }
-  // Atualiza setas
-  ['nome','ultimo','proximo','acum','tend','nov25','da_a','out26','dm_m'].forEach(c => {
-    const el = document.getElementById('sa-'+c);
-    if (!el) return;
-    el.className = 'sort-arrow' + (c === _qSortCol ? (' active ' + (_qSortAsc ? 'asc' : 'desc')) : '');
+let _qSortCol = 'dm_m', _qSortAsc = true, _qFiltro = 'all';
+
+function filtroQueda(f) {
+  _qFiltro = f;
+  ['all','aa','mm','both'].forEach(id => {
+    const el = document.getElementById('qf-'+id);
+    if(el) el.className = 'qf-btn' + (id===f?' qf-active':'');
   });
-  // Re-renderiza
+  _renderQueadaTabela();
+}
+
+function _getQueadaFiltrada() {
   const all = [...QUEDA_MAIN, ...QUEDA_OUTROS];
-  all.sort((a, b) => {
-    let va = a[_qSortCol], vb = b[_qSortCol];
-    if (va === null || va === undefined) va = _qSortAsc ? '￿' : -Infinity;
-    if (vb === null || vb === undefined) vb = _qSortAsc ? '￿' : -Infinity;
-    if (typeof va === 'string') return _qSortAsc ? va.localeCompare(vb,'pt-BR') : vb.localeCompare(va,'pt-BR');
-    return _qSortAsc ? va - vb : vb - va;
-  });
-  // Redistribui MAIN/OUTROS preservando a separação original
+  if(_qFiltro==='aa')   return all.filter(c=>c.q_aa);
+  if(_qFiltro==='mm')   return all.filter(c=>c.q_mm);
+  if(_qFiltro==='both') return all.filter(c=>c.q_aa&&c.q_mm);
+  return all;
+}
+
+function _renderQueadaTabela() {
+  const all = _getQueadaFiltrada();
   const mainCods = new Set(QUEDA_MAIN.map(c=>c.cod));
-  const sortedMain = all.filter(c => mainCods.has(c.cod));
-  const sortedOtros = all.filter(c => !mainCods.has(c.cod));
-  // Recria as linhas da tabela
-  const tbody = document.querySelector('#tab-queda tbody');
-  if (!tbody) return;
-  let html = '';
-  const mkRow = (c) => {
-    const sv=qSev(c), sCls=sv==='q-danger'?'s-danger':sv==='q-warn'?'s-warn':'s-ok';
+  let sorted = [...all];
+  sorted.sort((a,b)=>{
+    let va=a[_qSortCol], vb=b[_qSortCol];
+    if(va===null||va===undefined) va=_qSortAsc?'￿':-Infinity;
+    if(vb===null||vb===undefined) vb=_qSortAsc?'￿':-Infinity;
+    if(typeof va==='string') return _qSortAsc?va.localeCompare(vb,'pt-BR'):vb.localeCompare(va,'pt-BR');
+    return _qSortAsc?va-vb:vb-va;
+  });
+  const sortedMain = sorted.filter(c=>mainCods.has(c.cod));
+  const sortedOtros = sorted.filter(c=>!mainCods.has(c.cod));
+  const tbody = document.getElementById('queda-tbody');
+  if(!tbody) return;
+  let html='';
+  const mkRow=(c)=>{
+    const sv=qSev(c),sCls=sv==='q-danger'?'s-danger':sv==='q-warn'?'s-warn':'s-ok';
     const prox=qFmtDate(c.proximo);
     const nov25cell=c.nov25?fmt(c.nov25):'<span style="color:var(--fg3)">—</span>';
     const out26cell=c.out26?fmt(c.out26):'<span style="color:var(--fg3)">—</span>';
@@ -1610,8 +1625,8 @@ function sortQueda(col) {
       +'<td class="col-mm"><div class="cell-delta">'+qDltBadge(c.dm_m,c.q_mm)+'</div></td>'
       +'</tr>';
   };
-  sortedMain.forEach(c => { html += mkRow(c); });
-  if (sortedOtros.length > 0) {
+  sortedMain.forEach(c=>{html+=mkRow(c);});
+  if(sortedOtros.length>0){
     const otTend=sortedOtros.reduce((s,c)=>s+c.tend,0);
     html+='<tr class="q-outros" onclick="openOutrosModal()">'
       +'<td><div class="cell-cname"><div class="outros-label"><span style="font-size:16px;color:var(--fg3);">▶</span>Outros ('+sortedOtros.length+' clientes)</div></div></td>'
@@ -1621,7 +1636,21 @@ function sortQueda(col) {
       +'<td class="col-mm" colspan="2"><div class="cell" style="text-align:center;color:var(--fg3);font-size:11px;">ver detalhe ▸</div></td>'
       +'</tr>';
   }
-  tbody.innerHTML = html;
+  tbody.innerHTML=html;
+  const cnt=document.getElementById('qf-count');
+  if(cnt) cnt.textContent=sorted.length+' cliente'+(sorted.length!==1?'s':'');
+}
+
+
+function sortQueda(col) {
+  if (_qSortCol === col) { _qSortAsc = !_qSortAsc; }
+  else { _qSortCol = col; _qSortAsc = col === 'nome'; }
+  ['nome','ultimo','proximo','acum','tend','nov25','da_a','out26','dm_m'].forEach(c => {
+    const el = document.getElementById('sa-'+c);
+    if (!el) return;
+    el.className = 'sort-arrow' + (c===_qSortCol?(' active '+(_qSortAsc?'asc':'desc')):'');
+  });
+  _renderQueadaTabela();
 }
 
 function exportQuedasCSV() {
@@ -1990,38 +2019,7 @@ const qSev = c => {
 })();
 
 // ── tbody queda ──────────────────────────────────────────────────
-(function(){
-  const tbody=document.getElementById('queda-tbody');
-  let html='';
-  QUEDA_MAIN.forEach((c,i)=>{
-    const sv=qSev(c);
-    const sCls=sv==='q-danger'?'s-danger':sv==='q-warn'?'s-warn':'s-ok';
-    const prox=qFmtDate(c.proximo);
-    const nov25cell=c.nov25?fmt(c.nov25):'<span style="color:var(--fg3)">—</span>';
-    const out26cell=c.out26?fmt(c.out26):'<span style="color:var(--fg3)">—</span>';
-    html+='<tr class="'+sCls+' '+sv+'" onclick="openQueadaModal('+i+')">'
-      +'<td><div class="cell-cname"><div class="cname">'+c.nome+'</div><div style="font-size:10px;color:var(--fg3);font-family:\'DM Mono\',monospace;margin-top:2px;letter-spacing:.3px;">'+c.cod+'</div><div class="cbadges">'+qBadges(c)+'</div></div></td>'
-      +'<td><div class="cell-date">'+(qFmtDate(c.ultimo)||'—')+'</div></td>'
-      +'<td><div class="cell-date">'+(prox?'<span class="date-next">'+prox+'</span>':'<span class="date-na">—</span>')+'</div></td>'
-      +'<td><div class="cell">'+fmt(c.acum)+'</div></td>'
-      +'<td><div class="cell cell-tend">'+fmt(c.tend)+'</div></td>'
-      +'<td class="col-aa"><div class="cell" style="color:var(--fg2)">'+nov25cell+'</div></td>'
-      +'<td class="col-aa"><div class="cell-delta">'+qDltBadge(c.da_a,c.q_aa)+'</div></td>'
-      +'<td class="col-mm"><div class="cell" style="color:var(--fg2)">'+out26cell+'</div></td>'
-      +'<td class="col-mm"><div class="cell-delta">'+qDltBadge(c.dm_m,c.q_mm)+'</div></td>'
-      +'</tr>';
-  });
-  const otTend=QUEDA_OUTROS.reduce((s,c)=>s+c.tend,0);
-  html+='<tr class="q-outros" onclick="openOutrosModal()">'
-    +'<td><div class="cell-cname"><div class="outros-label"><span style="font-size:16px;color:var(--fg3);">▶</span>Outros ('+QUEDA_OUTROS.length+' clientes)</div><div style="font-size:11px;color:var(--fg3);margin-top:3px;">tend. &lt; 20 un./mês · clique para ver</div></div></td>'
-    +'<td colspan="2"></td>'
-    +'<td><div class="cell" style="color:var(--fg3)">—</div></td>'
-    +'<td><div class="cell cell-tend" style="opacity:.7">'+fmt(otTend)+'</div></td>'
-    +'<td class="col-aa" colspan="2"><div class="cell" style="text-align:center;color:var(--fg3);font-size:11px;padding:18px 20px;">ver detalhe ▸</div></td>'
-    +'<td class="col-mm" colspan="2"><div class="cell" style="text-align:center;color:var(--fg3);font-size:11px;padding:18px 20px;">ver detalhe ▸</div></td>'
-    +'</tr>';
-  tbody.innerHTML=html;
-})();
+_renderQueadaTabela();
 
 // ── modal queda ──────────────────────────────────────────────────
 function openQueadaModal(idx) {
