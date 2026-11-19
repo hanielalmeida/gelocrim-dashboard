@@ -1947,36 +1947,42 @@ function openQueadaModal(idx) {
 
   // CEV panel for modal
   const cevData = CEV_DATA[c.cod] || {};
-  // CEV: agrupa por nome (N linhas = N produtos de 1 mesmo equipamento físico)
+  // Agrupa por nome de equipamento (N linhas = N produtos de 1 mesmo equip. físico)
+  const CEV_PRODS = ['05KG','10KG','20KG','40KG'];
   const cevItemsRaw = (cevData.cev || []).filter(e => e.eq && e.eq !== 'None' && e.sit !== 'None' && e.sit === 'ATIVO');
   const cevGrupos = {};
   cevItemsRaw.forEach(e => {
-    if (!cevGrupos[e.eq]) cevGrupos[e.eq] = {cap:0, skus:0};
-    cevGrupos[e.eq].cap += (e.cap||0);
-    cevGrupos[e.eq].skus++;
+    if (!cevGrupos[e.eq]) cevGrupos[e.eq] = [];
+    cevGrupos[e.eq].push(e.cap||0);
   });
   const cevGruposList = Object.entries(cevGrupos);
-  const capTotal = cevGruposList.reduce((s,[,v])=>s+v.cap,0);
-  const mixProds = Object.entries(c.prod||{}).filter(([,v])=>v>0).map(([k,v])=>k.replace('KG',' kg')+': '+v+' un').join(' · ');
+  const capTotal = cevItemsRaw.reduce((s,e)=>s+(e.cap||0),0);
   let cevHtml = '<div class="m-sec-lbl" style="margin-top:16px;">Equipamentos em Comodato (CEV)</div>'
     + '<div class="qm-hist" style="flex-wrap:wrap;">';
   if (cevGruposList.length > 0) {
-    cevGruposList.forEach(([nome, info], i) => {
+    cevGruposList.forEach(([nome, caps], i) => {
       const shortNome = nome.replace(/^(CAMARA|CONSERVADOR|MINI CAMARA)\s*/,'').replace(' ZERO GRAU','').replace(' REFRIMATE','').trim();
-      const skuLabel = info.skus > 1 ? info.skus+' SKUs' : '1 produto';
+      const numLabel = cevGruposList.length > 1 ? '#'+(i+1)+' ' : '';
+      // Balão 1: nome + "N un." se 1 equipamento, ou "#N nome" se múltiplos
       cevHtml += '<div class="qm-hist-card">'
-        +'<div class="qm-h-lbl" style="font-size:10px;">'+(cevGruposList.length>1?'#'+(i+1)+' ':'')+shortNome+'</div>'
-        +'<div class="qm-h-val" style="font-size:12px;">'+(info.cap>0?info.cap+' kg':'—')+' · '+skuLabel+'</div>'
+        +'<div class="qm-h-lbl" style="font-size:10px;">'+numLabel+shortNome+'</div>'
+        +'<div class="qm-h-val" style="font-size:12px;">1 un.</div>'
         +'</div>';
+      // Balão 2: cap por produto (posição 0=05KG, 1=10KG, 2=20KG, 3=40KG)
+      const capStr = caps.map((v,j) => v>0 ? CEV_PRODS[j]+': '+v+' un' : null).filter(Boolean).join(' · ');
+      if (capStr) {
+        cevHtml += '<div class="qm-hist-card" style="min-width:200px;">'
+          +'<div class="qm-h-lbl">Cap. por Produto</div>'
+          +'<div class="qm-h-val" style="font-size:11px;">'+capStr+'</div>'
+          +'</div>';
+      }
     });
     if (cevGruposList.length > 1) {
-      cevHtml += '<div class="qm-hist-card" style="background:rgba(0,100,200,.06);"><div class="qm-h-lbl">Cap. Total ('+cevGruposList.length+' equip.)</div><div class="qm-h-val c-blue">'+capTotal+' kg</div></div>';
+      cevHtml += '<div class="qm-hist-card" style="background:rgba(0,100,200,.06);"><div class="qm-h-lbl">Cap. Total</div><div class="qm-h-val c-blue">'+capTotal+' un</div></div>';
     }
-    if (mixProds) cevHtml += '<div class="qm-hist-card" style="min-width:200px;"><div class="qm-h-lbl">Mix '+LBL_MES+'</div><div class="qm-h-val" style="font-size:11px;">'+mixProds+'</div></div>';
   } else {
     cevHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">Equipamentos</div>'
       +'<div class="qm-h-val c-na">Sem CEV ativo</div></div>';
-    if (mixProds) cevHtml += '<div class="qm-hist-card" style="min-width:200px;"><div class="qm-h-lbl">Mix '+LBL_MES+'</div><div class="qm-h-val" style="font-size:11px;">'+mixProds+'</div></div>';
   }
   cevHtml += '</div>';
   // Previsão de compra
