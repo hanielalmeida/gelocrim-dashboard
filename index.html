@@ -2439,7 +2439,7 @@ renderZerados = function() {
   document.getElementById('sg-desc').textContent =
     'Clientes sem compras classificados pela equipe comercial com motivo registrado';
   document.getElementById('zerados-footer-left').textContent =
-    'Perdidos Definitivos · base da planilha de justificativas · ${new Date().toLocaleDateString('pt-BR')}';
+    'Perdidos Definitivos · base da planilha de justificativas · '+new Date().toLocaleDateString('pt-BR');
 
   const nPerdido   = SC_TRATADOS.filter(c=>c.status==='perdido').length;
   const nNegoc     = SC_TRATADOS.filter(c=>c.status==='negociacao').length;
