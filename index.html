@@ -518,7 +518,7 @@ footer span { font-size:11px; color:var(--fg3); }
 <div class="tab-nav">
   <button class="tab-btn active" onclick="switchTab('tendencia',this)">Tendência</button>
   <button class="tab-btn" onclick="switchTab('metas',this)">Metas por Dia</button>
-  <button class="tab-btn" onclick="switchTab('queda',this)">Clientes em Queda <span id="queda-nav-ct" style="background:var(--danger);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:5px;vertical-align:middle;">99</span></button>
+  <button class="tab-btn" onclick="switchTab('queda',this)">Clientes em Queda <span id="queda-nav-ct" style="background:var(--danger);color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:5px;vertical-align:middle;"></span></button>
   <button class="tab-btn" onclick="switchTab('zerados',this)">Sem Compras <span id="zerados-nav-ct" style="background:#8A6000;color:#fff;border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;margin-left:5px;vertical-align:middle;">213</span></button>
   <button class="tab-btn" onclick="switchTab('base',this);setTimeout(renderBase,50)">Base de Dados</button>
 </div>
@@ -4046,4 +4046,5 @@ const CEV2 = {
   16844:[{cod:311,prod:"CAMARA ZERO GRAU MEDIO VERTIC",caps:{"05KG":30,"10KG":30,"20KG":13}}],
 };
 </script>
-</html>
+</html
+  const navCt=document.getElementById('queda-nav-ct'); if(navCt) navCt.textContent=allQ.length;>
