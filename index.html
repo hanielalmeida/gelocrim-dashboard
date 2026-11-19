@@ -1930,22 +1930,19 @@ function openQueadaModal(idx) {
   // CEV panel for modal
   const cevData = CEV_DATA[c.cod] || {};
   const cevItemsRaw = (cevData.cev || []).filter(e => e.eq && e.eq !== 'None' && e.sit !== 'None' && e.sit === 'ATIVO');
-  // Agrupa por nome do equipamento
-  const cevMap = {};
-  cevItemsRaw.forEach(e => { if(!cevMap[e.eq]) cevMap[e.eq]={qtd:0,cap:0}; cevMap[e.eq].qtd+=e.qtd||1; cevMap[e.eq].cap+=e.cap||0; });
-  const cevEntries = Object.entries(cevMap);
-  const capTotal = cevEntries.reduce((s,[,v])=>s+v.cap,0);
-  // Produtos do cliente (mix)
+  const capTotal = cevItemsRaw.reduce((s,e)=>s+(e.cap||0),0);
   const mixProds = Object.entries(c.prod||{}).filter(([,v])=>v>0).map(([k,v])=>k.replace('KG',' kg')+': '+v+' un').join(' · ');
   let cevHtml = '<div class="m-sec-lbl" style="margin-top:16px;">Equipamentos em Comodato (CEV)</div>'
     + '<div class="qm-hist" style="flex-wrap:wrap;">';
-  if (cevEntries.length > 0) {
-    cevEntries.forEach(([nome, info]) => {
-      const shortNome = nome.replace(/^(CAMARA|CONSERVADOR|MINI CAMARA)\s*/,'').replace(' ZERO GRAU','').replace(' REFRIMATE','').trim();
-      cevHtml += '<div class="qm-hist-card"><div class="qm-h-lbl" style="font-size:10px;">'+shortNome+'</div>'
-        +'<div class="qm-h-val" style="font-size:12px;">'+info.qtd+'× · '+(info.cap>0?info.cap+' kg':'—')+'</div></div>';
+  if (cevItemsRaw.length > 0) {
+    cevItemsRaw.forEach((e, i) => {
+      const shortNome = e.eq.replace(/^(CAMARA|CONSERVADOR|MINI CAMARA)\s*/,'').replace(' ZERO GRAU','').replace(' REFRIMATE','').trim();
+      cevHtml += '<div class="qm-hist-card"><div class="qm-h-lbl" style="font-size:10px;">'+(cevItemsRaw.length>1?'#'+(i+1)+' ':'')+shortNome+'</div>'
+        +'<div class="qm-h-val" style="font-size:12px;">1× · '+(e.cap>0?e.cap+' kg':'—')+'</div></div>';
     });
-    cevHtml += '<div class="qm-hist-card" style="background:rgba(0,100,200,.06);"><div class="qm-h-lbl">Cap. Total</div><div class="qm-h-val c-blue">'+capTotal+' kg</div></div>';
+    if (cevItemsRaw.length > 1) {
+      cevHtml += '<div class="qm-hist-card" style="background:rgba(0,100,200,.06);"><div class="qm-h-lbl">Cap. Total ('+cevItemsRaw.length+' equip.)</div><div class="qm-h-val c-blue">'+capTotal+' kg</div></div>';
+    }
     if (mixProds) cevHtml += '<div class="qm-hist-card" style="min-width:200px;"><div class="qm-h-lbl">Mix Nov/26</div><div class="qm-h-val" style="font-size:11px;">'+mixProds+'</div></div>';
   } else {
     cevHtml += '<div class="qm-hist-card"><div class="qm-h-lbl">Equipamentos</div>'
