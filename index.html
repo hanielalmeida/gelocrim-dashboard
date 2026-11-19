@@ -1962,14 +1962,17 @@ function openQueadaModal(idx) {
   if (cevGruposList.length > 0) {
     cevGruposList.forEach(([nome, caps], i) => {
       const shortNome = nome.replace(/^(CAMARA|CONSERVADOR|MINI CAMARA)\s*/,'').replace(' ZERO GRAU','').replace(' REFRIMATE','').trim();
-      const numLabel = cevGruposList.length > 1 ? '#'+(i+1)+' ' : '';
-      // Balão 1: nome + "N un." se 1 equipamento, ou "#N nome" se múltiplos
+      const numUnits = caps.length; // cada entrada = 1 unidade física
+      // Balão 1: nome + N un.
       cevHtml += '<div class="qm-hist-card">'
-        +'<div class="qm-h-lbl" style="font-size:10px;">'+numLabel+shortNome+'</div>'
-        +'<div class="qm-h-val" style="font-size:12px;">1 un.</div>'
+        +'<div class="qm-h-lbl" style="font-size:10px;">'+(cevGruposList.length>1?'#'+(i+1)+' ':'')+shortNome+'</div>'
+        +'<div class="qm-h-val" style="font-size:12px;">'+numUnits+' un.</div>'
         +'</div>';
-      // Balão 2: cap por produto (posição 0=05KG, 1=10KG, 2=20KG, 3=40KG)
-      const capStr = caps.map((v,j) => v>0 ? CEV_PRODS[j]+': '+v+' un' : null).filter(Boolean).join(' · ');
+      // Balão 2: soma das capacidades por produto (posição 0=05KG, 1=10KG, 2=20KG, 3=40KG)
+      // Cada entrada representa 1 unidade — se todas têm a mesma estrutura, somamos por posição
+      const capPorProd = [0,0,0,0];
+      caps.forEach((v, idx) => { if(idx < 4) capPorProd[idx] += v; });
+      const capStr = capPorProd.map((v,j) => v>0 ? CEV_PRODS[j]+': '+v+' un' : null).filter(Boolean).join(' · ');
       if (capStr) {
         cevHtml += '<div class="qm-hist-card" style="min-width:200px;">'
           +'<div class="qm-h-lbl">Cap. por Produto</div>'
